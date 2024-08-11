@@ -2,7 +2,6 @@
 
 namespace Codyas\SkeletonBundle\Model;
 
-use Codyas\SkeletonBundle\Form\UserType;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\SoftDeleteable\SoftDeleteable;
