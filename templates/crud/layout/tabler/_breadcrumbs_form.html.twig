@@ -1,0 +1,13 @@
+<div class="page-pretitle">
+    <ol class="breadcrumb" aria-label="breadcrumbs">
+        <li class="breadcrumb-item"><a
+                href="{{ path(csk_option('templating.home_path')) }}">{{ csk_option('templating.home_label') | trans() }}</a>
+        </li>
+        <li class="breadcrumb-item"><a
+                href="{{ path(entityConfig.listRoute, {fqdn: entityConfig.customListRoute ? null : entityConfig.encodedFqdn }) }}">
+                {{ entityConfig.headerTranslatableLabel | trans }}
+            </a></li>
+        <li class="breadcrumb-item active" aria-current="page"><a
+                href="#">{{ entityConfig.createTranslatableLabel | trans }}</a></li>
+    </ol>
+</div>

@@ -1,0 +1,182 @@
+{# @var \Codyas\SkeletonBundle\Model\CrudEntity entityConfig #}
+{% extends entityConfig.baseLayout %}
+{% set fqdn = entityConfig.encodedFqdn %}
+{% block page_title %}{{ entityConfig.headerTranslatableLabel | trans }}{% endblock %}
+
+{% block page_subtitle %}
+    <div class="text-body-secondary mt-1">
+        {{ "%itemsPerPage% of %total% records" | trans({"%itemsPerPage%":(items | length), "%total%": pagination.totalItemCount}) }}
+    </div>
+{% endblock %}
+
+{% block breadcrumb %}
+    {% include '@Skeleton/crud/layout/tabler/_breadcrumbs.html.twig' %}
+{% endblock %}
+
+
+{% block page_actions %}
+    <div class="btn-list">
+        <a href="{{ path(entityConfig.createRoute, {'fqdn': entityConfig.customCreateRoute ? null : fqdn}) }}"
+           class="btn btn-primary d-none d-sm-inline-block">
+            {{ entityConfig.createTranslatableLabel | trans }}
+        </a>
+    </div>
+{% endblock %}
+
+{% block body_start %}
+    data-controller="csk-crud csk-notify"
+    data-csk-crud-generic-delete-msg-value="{{ 'Something went wrong while deleting the record. Please try again later.' | trans }}"
+    data-csk-notify-alerts-value="{{ app.flashes('csk-non-blocking-alerts') | json_encode }}"
+    data-action="csk-crud-table-record:deleteRecord@window->csk-crud#showDeleteDialog"
+{% endblock %}
+
+{% block page_content %}
+    <div class="row">
+        {% if entityConfig.filterable %}
+            <div class="col-3">
+                {{ form_start(filterForm) }}
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="fa fa-filter"></i>
+                            {{ "Filter" | trans({}, 'SkeletonBundle') }}</h3>
+                    </div>
+                    <div class="card-body">
+                        {% include entityConfig.filterTemplate %}
+                    </div>
+                    <div class="card-footer">
+                        <div class="row justify-content-center">
+{#                            <div class="col-5">#}
+{#                                <button type="reset" class="btn w-100 btn-secondary ">#}
+{#                                    {{ "Clear" | trans }}#}
+{#                                </button>#}
+{#                            </div>#}
+                            <div class="col-6">
+                                <button type="submit" class="btn w-100 btn-primary">
+                                    {{ "Apply" | trans }}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {{ form_end(filterForm) }}
+            </div>
+        {% endif %}
+
+        <div class="col-{{ entityConfig.filterable ? '9' : '12' }}">
+            <div class="card">
+                <div class="card-body p-3">
+                    {% if items|length > 0 %}
+                        <table class="table"
+                               data-controller="csk-crud-table"
+                               data-csk-crud-table-load-url-value="{{ path('csk_crud_fetch', {'fqdn' : entityConfig.encodedFqdn}) }}">
+                            <thead>
+                            <tr>
+                                {% if entityConfig.displayRowNumber %}
+                                    <th>{{ "Number" | trans({}, "SkeletonBundle") }}</th>
+                                {% endif %}
+                                {# @var \Codyas\SkeletonBundle\Model\ColumnDefinition column #}
+                                {% for column in entityConfig.dataTableColumns %}
+                                    <th>
+                                        {% if column.sort %}
+                                            <button class="table-sort"
+                                                    data-sort="{{ column.propertyKey }}">{{ column.label }}</button>
+                                        {% else %}
+                                            {{ column.label }}
+                                        {% endif %}
+                                    </th>
+                                {% endfor %}
+                                {% if entityConfig.displayActionsButtons %}
+                                    <th></th>
+                                {% endif %}
+                            </tr>
+                            </thead>
+                            <tbody class="table-tbody">
+                            {% for itemColums in items %}
+                                <tr
+                                    data-controller="csk-crud-table-record"
+                                    data-csk-crud-table-record-delete-token-value="{{ csrf_token(entityConfig.encodedFqdn) }}"
+                                    data-csk-crud-table-record-delete-url-value="{{ path('csk_crud_delete', {
+                                        'id': itemColums.instance.id,
+                                        'fqdn': entityConfig.fqdnRouteArgument(constant('\\Codyas\\SkeletonBundle\\Helper\\Constants::ACTION_DELETE'))
+                                    }) }}">
+                                    {% for column in 1..entityConfig.columnCount %}
+                                        {% apply spaceless %}
+                                            <td class="align-middle">
+                                                {% if loop.last and entityConfig.displayActionsButtons %}
+                                                    {{ itemColums[loop.index0] | raw }}
+                                                {% else %}
+                                                    {% if entityConfig.dataTableColumns[column-1].renderHtml %}
+                                                        {{ itemColums[loop.index0] | raw }}
+                                                    {% else %}
+                                                        {{ itemColums[loop.index0] }}
+                                                    {% endif %}
+                                                {% endif %}
+                                            </td>
+                                        {% endapply %}
+                                    {% endfor %}
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                        <div class="d-flex justify-content-end">
+                            {{ knp_pagination_render(pagination) }}
+                        </div>
+                    {% else %}
+                        <div class="p-5 text-center text-muted">
+                            <h3 class="fw-normal">
+                                <i class="fa fa-inbox d-block fa-5x mb-3"></i>
+                                {{ "There are no results to display." | trans }}
+                            </h3>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block page_content_after %}
+    <div class="modal modal-blur fade" id="deleteDialog" tabindex="-1" data-csk-crud-target="deleteDialog">
+        <div class="modal-dialog modal-sm modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ "Close" | trans }}"></button>
+                <div class="modal-status bg-danger"></div>
+                <div class="modal-body text-center py-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon mb-2 text-danger icon-lg" width="24" height="24"
+                         viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round"
+                         stroke-linejoin="round">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                        <path d="M12 9v2m0 4v.01"/>
+                        <path
+                            d="M5 19h14a2 2 0 0 0 1.84 -2.75l-7.1 -12.25a2 2 0 0 0 -3.5 0l-7.1 12.25a2 2 0 0 0 1.75 2.75"/>
+                    </svg>
+                    <h3>{{ "Please confirm" | trans }}</h3>
+                    <div class="text-secondary">
+                        {{ "Do you really want to remove this item? This action cannot be undone." | trans }}
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="w-100">
+                        <div class="row">
+                            <div class="col">
+                                <a href="#" class="btn w-100" data-bs-dismiss="modal">
+                                    {{ "Cancel" | trans }}
+                                </a>
+                            </div>
+                            <div class="col">
+                                <button class="btn btn-danger w-100"
+                                        data-action="csk-crud#deleteRecord"
+                                        data-csk-crud-target="deleteDialogButton"
+                                >
+                                    {{ "Delete" | trans }}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% include '@Skeleton/crud/layout/tabler/_entity_dialogs.html.twig' %}
+{% endblock %}

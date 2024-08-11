@@ -1,0 +1,16 @@
+{% extends "@Tabler/layout-horizontal.html.twig" %}
+
+{% block body_start %}
+    {{ stimulus_controller('csk-notify', {
+        alerts: app.flashes('csk-non-blocking-alerts')
+    }) }}
+{% endblock %}
+
+{% block page_content_start %}{% endblock %}
+{% block javascripts %}
+    {{ encore_entry_script_tags('app') }}
+    {{ parent() }}
+{% endblock %}
+
+
+

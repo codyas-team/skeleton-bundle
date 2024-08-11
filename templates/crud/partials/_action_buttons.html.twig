@@ -1,0 +1,36 @@
+{# @var \Codyas\SkeletonBundle\Model\CrudEntity entityConfig #}
+{% set fqdn = entityConfig.encodedFqdn %}
+<div class="btn-group">
+    <a href="{{ path(entityConfig.editRoute, {
+        'id': instance.id,
+        'fqdn': entityConfig.customEditRoute ? null : fqdn
+    }) }}"
+       class="btn btn-x w-100 btn-icon btn-sm"
+       data-toggle="tooltip"
+       title="{{ "Edit" | trans({}, 'SkeletonBundle') }}"
+       aria-label="{{ "Edit" | trans({}, 'SkeletonBundle') }}">
+        <i class="fa fa-edit"></i>
+    </a>
+    {# @var \Codyas\SkeletonBundle\Model\DialogDefinition dialog #}
+    {% for dialog in entityConfig.dialogs %}
+        {% if dialog.actionLauncherDefinition %}
+            <button
+                data-toggle="tooltip"
+                data-action="csk-crud-table-record#requestDialog"
+                data-dialog-id="{{ dialog.id }}"
+                data-load-url="{{ path(dialog.loadUrl, {'id': instance.id}) }}"
+                title="{{ dialog.actionLauncherDefinition.title | trans }}"
+                aria-label="{{ dialog.actionLauncherDefinition.title | trans }}"
+                class="btn btn-x w-100 btn-icon btn-sm {{ dialog.actionLauncherDefinition.cssClass }}">
+                <i class="{{ dialog.actionLauncherDefinition.icon }}"></i>
+            </button>
+        {% endif %}
+    {% endfor %}
+    <button class="btn btn-x w-100 btn-icon btn-sm text-red"
+            data-action="csk-crud-table-record#requestDelete"
+            data-toggle="tooltip"
+            title="{{ "Delete record" | trans({}, 'SkeletonBundle') }}"
+            aria-label="{{ "Delete record" | trans({}, 'SkeletonBundle') }}">
+        <i class="fa fa-trash"></i>
+    </button>
+</div>

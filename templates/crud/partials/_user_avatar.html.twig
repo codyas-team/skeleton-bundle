@@ -1,0 +1,12 @@
+<div class="row align-items-center">
+    <div class="col-auto">
+        <span class="badge bg-{{ user.enabled ? "success" : "red" }}"></span>
+    </div>
+    <div class="col-auto">
+        <span class="avatar">{{ user.name |first }}{{ user.lastName |first }}</span>
+    </div>
+    <div class="col">
+        {{ user }}
+        <div class="d-block text-secondary text-truncate mt-n1">{{ user.email }}</div>
+    </div>
+</div>

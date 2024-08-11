@@ -1,0 +1,10 @@
+skeleton:
+    security:
+        registration: false
+    templating:
+        name: '%env(CSK_NAME)%'
+#        description: '%env(CSK_DESCRIPTION)%'
+#        keywords: '%env(CSK_KEYWORDS)%'
+#        base_template: '%env(CSK_TEMPLATE)%'
+#        home_path: '%env(CSK_HOME_PATH)%'
+#        logo: '%env(CSK_LOGO)%'

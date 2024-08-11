@@ -1,0 +1,30 @@
+{# @var \Codyas\SkeletonBundle\Model\CrudEntity entityConfig #}
+<div class="row justify-content-center">
+    <div class="col-6">
+        {% block form_start %}
+            {{ form_start(form, {
+                attr: {
+                    'data-action': 'csk-crud-form#handleSubmit',
+                    'data-csk-crud-form-target': 'form'
+                }
+            }) }}
+        {% endblock %}
+
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">
+                    {{ entityConfig.genericFormTranslatableLabel | trans() }}
+                </h3>
+            </div>
+            <div class="card-body">
+                {% block form_body %}
+                    {{ form_rest(form) }}
+                {% endblock %}
+            </div>
+            <div class="card-footer text-end">
+                <twig:BsFormButtons :entityConfig="entityConfig" />
+            </div>
+        </div>
+        {{ form_end(form) }}
+    </div>
+</div>

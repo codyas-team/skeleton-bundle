@@ -1,0 +1,3 @@
+codyas_skeleton_security:
+    resource: 'Codyas\SkeletonBundle\Controller\SecurityController'
+    type: attribute

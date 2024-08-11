@@ -1,0 +1,21 @@
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+
+    Codyas\SkeletonBundle\:
+        resource: '../src/'
+        exclude:
+            - '../src/DependencyInjection/'
+            - '../src/Model/'
+
+    Codyas\SkeletonBundle\Twig\RuntimeExtension:
+        class: Codyas\SkeletonBundle\Twig\RuntimeExtension
+        autowire: true
+        tags:
+            - { name: twig.runtime }
+
+    Codyas\SkeletonBundle\Twig\SkeletonExtension:
+        class: Codyas\SkeletonBundle\Twig\SkeletonExtension
+        tags:
+            - { name: twig.extension }

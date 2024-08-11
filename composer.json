@@ -1,0 +1,74 @@
+{
+    "name": "codyas/skeleton-bundle",
+    "type": "symfony-bundle",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Yasel Romero",
+            "email": "yasel@codyas.com"
+        },
+        {
+            "name": "Leonardo D. Antunez",
+            "email": "antunez@codyas.com"
+        }
+    ],
+    "description": "Codyas skeleton for Symfony apps development",
+    "minimum-stability": "stable",
+    "require": {
+        "php": ">=8.2",
+        "kevinpapst/tabler-bundle": "^1.4",
+        "knplabs/knp-paginator-bundle": "^5.0",
+        "stof/doctrine-extensions-bundle": "^1.0",
+        "symfony/asset-mapper": "^6.4 || ^7.0",
+        "symfony/flex": "^1.0 || ^2.0",
+        "symfony/form": "^6.4 || ^7.0",
+        "symfony/framework-bundle": "^6.4 || ^7.0",
+        "symfony/http-client": "^6.4 || ^7.0",
+        "symfony/orm-pack": "^1.0 || 2.0",
+        "symfony/security-bundle": "^6.4 || ^7.0",
+        "symfony/stimulus-bundle": "^2.18",
+        "symfony/translation": "^6.4 || ^7.0",
+        "symfony/twig-bundle": "^6.4 || ^7.0",
+        "symfony/ux-turbo": "^2.18",
+        "symfony/ux-twig-component":  "^2.18",
+        "symfony/validator": "^6.4 || ^7.0",
+        "symfony/webpack-encore-bundle": "^1.0 || ^2.0",
+        "symfonycasts/reset-password-bundle": "^1.21",
+        "symfonycasts/verify-email-bundle": "^1.17",
+        "twig/twig": "^2.12|^3.0"
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "autoload": {
+        "psr-4": {
+            "Codyas\\SkeletonBundle\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Codyas\\Skeleton\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "copy-skeleton-files": [
+            "php -r \"file_exists('templates/bundles') || mkdir('templates/bundles');\"",
+            "php -r \"file_exists('src/Security') || mkdir('src/Security');\"",
+            "php -r \"file_exists('src/EventSubscriber') || mkdir('src/EventSubscriber');\"",
+            "cp -Rn vendor/codyas/skeleton-bundle/boilerplate/templates/bundles/* templates/bundles",
+            "cp -Rn vendor/codyas/skeleton-bundle/boilerplate/security/* src/Security",
+            "cp -Rn vendor/codyas/skeleton-bundle/boilerplate/config/routes/skeleton.yaml config/routes",
+            "cp -Rn vendor/codyas/skeleton-bundle/boilerplate/config/packages/tabler.yaml config/packages",
+            "cp -Rn vendor/codyas/skeleton-bundle/boilerplate/config/packages/skeleton.yaml config/packages",
+            "cp -Rn vendor/codyas/skeleton-bundle/boilerplate/menu/MenuBuilderSubscriber.php src/EventSubscriber"
+        ],
+        "post-install-cmd": [
+            "copy-skeleton-files",
+            "Codyas\\SkeletonBundle\\Composer\\ScriptHandler::installJsDependencies"
+        ],
+        "post-update-cmd": [
+            "copy-skeleton-files",
+            "Codyas\\SkeletonBundle\\Composer\\ScriptHandler::installJsDependencies"
+        ]
+    }
+}

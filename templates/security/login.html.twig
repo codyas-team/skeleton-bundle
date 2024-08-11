@@ -1,0 +1,61 @@
+{% extends "@Tabler/security.html.twig" %}
+
+{% block registration %}
+    {% if csk_option('security.registration') == true %}
+        {{ parent() }}
+    {% endif %}
+{% endblock %}
+
+{% block title %}{% endblock %}
+{% block logo_login %}
+    <img src="{{ tabler_bundle.option('logo_url') }}" alt="{{ csk_option('templating.name') }}">
+{% endblock %}
+{% block login_social_auth %}{% endblock %}
+
+{% block login_form %}
+    <form action="{{ path('tabler_login_check'|tabler_route) }}" method="post" autocomplete="off"
+          class="login-box-body security-login">
+        {% block login_form_start %}{% endblock %}
+        <div class="mb-3">
+            <label for="username" class="form-label">{{ 'Username'|trans({}, 'TablerBundle') }}</label>
+            <input type="email" id="username" name="_username" tabindex="10" class="form-control"
+                   placeholder="{{ 'Username'|trans({}, 'TablerBundle') }}" value="{{ last_username|default('') }}"
+                   required="required">
+        </div>
+        <div class="mb-3">
+            <label for="password" class="form-label">
+                {{ 'Password'|trans({}, 'TablerBundle') }}
+                {% block password_forgotten %}
+                    {% if 'tabler_password_reset'|tabler_route != 'tabler_password_reset' %}
+                        <span class="form-label-description">
+                                            <a href="{{ path('tabler_password_reset'|tabler_route) }}"
+                                               tabindex="100">{{ 'I forgot my password'|trans({}, 'TablerBundle') }}</a>
+                                        </span>
+                    {% endif %}
+                {% endblock %}
+            </label>
+            <div class="input-group input-group-flat">
+                <input id="password" name="_password" type="password" tabindex="20" class="form-control"
+                       placeholder="{{ 'Password'|trans({}, 'TablerBundle') }}" required="required">
+            </div>
+        </div>
+        {% block remember_me %}
+            <div class="mb-3">
+                <label class="form-check">
+                    <input id="remember_me" tabindex="30" name="_remember_me" type="checkbox" class="form-check-input">
+                    <span class="form-check-label">{{ 'Remember Me'|trans({}, 'TablerBundle') }}</span>
+                </label>
+            </div>
+        {% endblock %}
+        <div class="form-footer">
+            <button type="submit" tabindex="40"
+                    class="btn btn-primary w-100">{{ 'Sign In'|trans({}, 'TablerBundle') }}</button>
+        </div>
+        {% block csrf_token %}
+            <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}"/>
+        {% endblock %}
+        {% block login_form_end %}{% endblock %}
+    </form>
+{% endblock %}
+
+

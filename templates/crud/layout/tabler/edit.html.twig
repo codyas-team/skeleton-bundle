@@ -1,0 +1,23 @@
+{# @var \Codyas\SkeletonBundle\Model\CrudEntity entityConfig #}
+{% extends entityConfig.baseLayout %}
+
+{% block breadcrumb %}
+    {% include '@Skeleton/crud/layout/tabler/_breadcrumbs_form.html.twig' %}
+{% endblock %}
+
+{% block page_title %}{{ entityConfig.editTranslatableLabel | trans({'%identifier%' : form.vars.value.__toString}) }}{% endblock %}
+
+{% block page_subtitle %}{% endblock %}
+
+{% block page_actions %}{% endblock %}
+
+{% block page_content %}
+    <div
+        data-controller="csk-crud-form"
+        data-csk-crud-form-generic-error-msg-value="{{ "There was an error processing your request. Please try again later or contact technical support." | trans }}"
+    >
+        <div data-csk-crud-form-target="formContainer">
+            {% include entityConfig.formTemplate %}
+        </div>
+    </div>
+{% endblock %}

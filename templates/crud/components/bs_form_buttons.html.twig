@@ -1,0 +1,11 @@
+<div{{ attributes }}>
+    <a href="{{ path(entityConfig.listRoute, { fqdn : entityConfig.fqdnRouteArgument}) }}" class="btn btn-secondary">
+        <i class="fa fa-close me-1"></i> {{ "Cancel" | trans({}, 'SkeletonBundle') }}
+    </a>
+{#    <button name="submitType" class="btn btn-primary" value="apply">#}
+{#        <i class="fa fa-save me-1"></i> {{ "Apply" | trans({}, 'SkeletonBundle') }}#}
+{#    </button>#}
+    <button name="submitType" class="btn btn-primary" type="submit" >
+        <i class="fa fa-save me-1"></i> {{ "Save" | trans({}, 'SkeletonBundle') }}
+    </button>
+</div>
