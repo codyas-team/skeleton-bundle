@@ -1,6 +1,12 @@
 {% extends "@Tabler/layout-vertical.html.twig" %}
 
-{% block javascripts %}
+{% block body_start %}
+    {{ stimulus_controller('csk-notify', {
+        alerts: app.flashes('csk-non-blocking-alerts')
+    }) }}
+{% endblock %}
+
+{% block stylesheets %}
     {{ parent() }}
     {{ encore_entry_script_tags('app') }}
 {% endblock %}

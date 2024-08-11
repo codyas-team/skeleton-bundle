@@ -7,9 +7,9 @@
 {% endblock %}
 
 {% block page_content_start %}{% endblock %}
-{% block javascripts %}
-    {{ encore_entry_script_tags('app') }}
+{% block stylesheets %}
     {{ parent() }}
+    {{ encore_entry_script_tags('app') }}
 {% endblock %}
 
 
