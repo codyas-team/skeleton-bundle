@@ -19,3 +19,8 @@ services:
         class: Codyas\SkeletonBundle\Twig\SkeletonExtension
         tags:
             - { name: twig.extension }
+
+    Codyas\SkeletonBundle\Security\RoleVoter:
+        class: Codyas\SkeletonBundle\Security\RoleVoter
+        tags:
+            - { name: security.voter }

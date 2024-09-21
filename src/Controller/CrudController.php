@@ -7,6 +7,7 @@ use Codyas\SkeletonBundle\Helper\Constants;
 use Codyas\SkeletonBundle\Model\CrudEntity;
 use Codyas\SkeletonBundle\Model\CrudEntityInterface;
 use Codyas\SkeletonBundle\Model\RowRendererArguments;
+use Codyas\SkeletonBundle\Security\VoterArgument;
 use Codyas\SkeletonBundle\Service\CrudService;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
@@ -51,6 +52,7 @@ class CrudController extends AbstractController
     #[Route('/fetch', name: "csk_crud_fetch", methods: [Request::METHOD_GET])]
     public function fetch(Request $request): Response
     {
+        $this->denyAccessUnlessGranted(CrudEntityInterface::LIST, new VoterArgument($this->entityConfiguration));
         $start = $request->query->get('start', 0);
         $length = $request->query->get('length', 10);
         $page = intval($start / $length) + 1;
@@ -67,6 +69,7 @@ class CrudController extends AbstractController
     #[Route('/create', name: "csk_crud_create", methods: [Request::METHOD_GET, Request::METHOD_POST])]
     public function create(Request $request): Response
     {
+        $this->denyAccessUnlessGranted(CrudEntityInterface::CREATE, new VoterArgument($this->entityConfiguration));
         $instance = new $this->entityConfiguration->fqdn;
         return $this->buildAndHandleForm($request, $instance);
     }
@@ -75,6 +78,10 @@ class CrudController extends AbstractController
     public function edit(mixed $id, Request $request): Response
     {
         $instance = $this->crudService->retrieveInstance($this->entityConfiguration->fqdn, $id);
+        $this->denyAccessUnlessGranted(CrudEntityInterface::EDIT, new VoterArgument(
+                $this->entityConfiguration,
+                $instance)
+        );
         return $this->buildAndHandleForm($request, $instance);
     }
 
@@ -82,13 +89,17 @@ class CrudController extends AbstractController
     public function delete(mixed $id, Request $request): Response
     {
         $payload = json_decode($request->getContent(), true);
-        if (!array_key_exists("token", $payload) || !$payload["token"]){
+        if (!array_key_exists("token", $payload) || !$payload["token"]) {
             throw new BadRequestHttpException("Delete token not present in request.");
         }
         if (!$this->isCsrfTokenValid($this->entityConfiguration->getEncodedFqdn(), $payload["token"])) {
             throw new BadRequestHttpException();
         }
         $instance = $this->crudService->retrieveInstance($this->entityConfiguration->fqdn, $id);
+        $this->denyAccessUnlessGranted(CrudEntityInterface::DELETE, new VoterArgument(
+                $this->entityConfiguration,
+                $instance)
+        );
         $this->crudService->removeInstance($instance);
         $this->createFlashNonBlockingAlert([
             'type' => Constants::TYPE_SUCCESS,
@@ -140,7 +151,7 @@ class CrudController extends AbstractController
             $actionButtons = $this->entityConfiguration->displayActionsButtons === true ? [
                 $this->renderView($this->entityConfiguration->actionButtonsTemplate, [
                     'record' => $item,
-                    'entity' => $this->entityConfiguration->entityIdentifier,
+                    'entity' => $this->entityConfiguration->fqdn,
                 ])
             ] : [];
             $response [] = array_merge(

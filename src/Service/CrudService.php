@@ -12,6 +12,7 @@ use Codyas\SkeletonBundle\Helper\Constants;
 use Codyas\SkeletonBundle\Model\CrudEntity;
 use Codyas\SkeletonBundle\Model\CrudEntityInterface;
 use Codyas\SkeletonBundle\Model\RowRendererArguments;
+use Codyas\SkeletonBundle\Security\VoterArgument;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query;
@@ -19,6 +20,7 @@ use Knp\Component\Pager\Pagination\PaginationInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\Finder\Exception\AccessDeniedException;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -52,11 +54,17 @@ class CrudService
     public function renderListFromFqdn(string $fqdn, ?array $filterData = []): array
     {
         $entityConfig = $this->getEntityConfiguration($fqdn);
+        if (!$this->authorizationChecker->isGranted(CrudEntityInterface::VIEW, new VoterArgument($entityConfig))){
+            throw new AccessDeniedException();
+        }
         return $this->renderListFromEntityConfig($entityConfig, $filterData);
     }
 
     public function renderListFromEntityConfig(CrudEntity $entityConfig, ?array $filterData = []): array
     {
+        if (!$this->authorizationChecker->isGranted(CrudEntityInterface::VIEW, new VoterArgument($entityConfig))){
+            throw new AccessDeniedException();
+        }
         $request = $this->requestStack->getCurrentRequest();
         $queryParams = $request->query->all();
         $filterData['pageSize'] = $request->query->get('pageSize', 10);
@@ -86,6 +94,11 @@ class CrudService
         if (!$entityConfig) {
             $entityConfig = $this->getEntityConfiguration(get_class($instance));
         }
+        $voterAttribute = $instance === null ? CrudEntityInterface::CREATE : CrudEntityInterface::EDIT;
+        if (!$this->authorizationChecker->isGranted($voterAttribute, new VoterArgument($entityConfig, $instance))){
+            throw new AccessDeniedException();
+        }
+
         $formType = $entityConfig->formType;
         $actionUrl = $this->generateInstanceActionUrl($instance, $entityConfig);
         $form = $this->formFactory->create($formType, $instance, [

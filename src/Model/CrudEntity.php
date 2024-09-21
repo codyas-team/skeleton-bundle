@@ -5,33 +5,41 @@ namespace Codyas\SkeletonBundle\Model;
 use Attribute;
 use Codyas\SkeletonBundle\Exception\ConfigurationException;
 use Codyas\SkeletonBundle\Helper\Constants;
+use Codyas\SkeletonBundle\Security\RoleVoter;
 
 #[Attribute(Attribute::TARGET_CLASS)]
 class CrudEntity
 {
     public function __construct(
-        public string        $fqdn,
-        public string        $label,
-        public string        $formType,
-        public array         $dataTableColumns,
-        public ?string       $customListRoute = null,
-        public ?string       $customCreateRoute = null,
-        public ?string       $customEditRoute = null,
-        public ?string       $customDeleteRoute = 'csk_crud_delete',
-        public ?string       $formTemplate = '@Skeleton/crud/partials/_form.html.twig',
-        public ?string       $filterType = null,
-        public ?string       $filterTemplate = '@Skeleton/crud/partials/_form_filter.html.twig',
-        public ?string       $actionButtonsTemplate = '@Skeleton/crud/partials/_action_buttons.html.twig',
-        public ?bool         $displayActionsButtons = true,
-        public ?TemplateEnum $template = TemplateEnum::Tabler,
-        public ?TemplateEnum $layout = TemplateEnum::TablerLayoutHorizontal,
-        public ?string       $customListTemplate = null,
-        public ?string       $customCreateTemplate = null,
-        public ?string       $customEditTemplate = null,
-        public ?bool         $displayRowNumber = true,
-        public ?bool         $customFetch = false,
-        public ?string       $genericFormLabel = null,
-        public ?array        $dialogs = null,
+        public string          $fqdn,
+        public string          $label,
+        public string          $formType,
+        public array           $dataTableColumns,
+        public ?string         $customListRoute = null,
+        public ?string         $customCreateRoute = null,
+        public ?string         $customEditRoute = null,
+        public ?string         $customDeleteRoute = 'csk_crud_delete',
+        public ?string         $formTemplate = '@Skeleton/crud/partials/_form.html.twig',
+        public ?string         $filterType = null,
+        public ?string         $filterTemplate = '@Skeleton/crud/partials/_form_filter.html.twig',
+        public ?string         $actionButtonsTemplate = '@Skeleton/crud/partials/_action_buttons.html.twig',
+        public ?bool           $displayActionsButtons = true,
+        public ?TemplateEnum   $template = TemplateEnum::Tabler,
+        public ?TemplateEnum   $layout = TemplateEnum::TablerLayoutHorizontal,
+        public ?string         $customListTemplate = null,
+        public ?string         $customCreateTemplate = null,
+        public ?string         $customEditTemplate = null,
+        public ?bool           $displayRowNumber = true,
+        public ?bool           $customFetch = false,
+        public ?string         $genericFormLabel = null,
+        public ?array          $dialogs = null,
+        public VoterDefinition $voter = new VoterDefinition(RoleVoter::class, arguments: [
+            CrudEntityInterface::LIST => 'ROLE_ADMIN',
+            CrudEntityInterface::VIEW => 'ROLE_ADMIN',
+            CrudEntityInterface::CREATE => 'ROLE_ADMIN',
+            CrudEntityInterface::EDIT => 'ROLE_ADMIN',
+            CrudEntityInterface::DELETE => 'ROLE_ADMIN'
+        ]),
     )
     {
     }
@@ -145,6 +153,11 @@ class CrudEntity
     public function getEditRoute(): ?string
     {
         return $this->customEditRoute ?: 'csk_crud_edit';
+    }
+
+    public function supportsVoter(string $voterFqdn): bool
+    {
+        return $voterFqdn === $this->voter->voterClass;
     }
 
 }

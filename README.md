@@ -1,7 +1,13 @@
 # Codyas Skeleton Bundle
 
-## Installation
+## Skeleton project installation
+For Codyas team members, express installation method is available.
+CD to the folder you want to locate the project and execute the following command, make sure to replace PROJECT_NAME for your actual project name:
+```console
+curl -s https://gist.githubusercontent.com/leoantunez/0446c79dcc717de4fbbc0cb8214c26d9/raw | bash -s PROJECT_NAME
+```
 
+## Manual installation
 Make sure Composer is installed globally, as explained in the
 [installation chapter](https://getcomposer.org/doc/00-intro.md)
 of the Composer documentation.
@@ -9,7 +15,7 @@ of the Composer documentation.
 Open a command console, enter your project directory and execute:
 
 ```console
-$ composer require codyas/skeleton-bundle
+composer require codyas/skeleton-bundle
 ```
 
 ## Configuration
