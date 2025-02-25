@@ -9,6 +9,7 @@
 {% block page_content_start %}{% endblock %}
 {% block stylesheets %}
     {{ parent() }}
+    <script src="{{ asset('bundles/tabler/tabler.js') }}?{{ tabler_asset_version() }}"></script>
     {{ encore_entry_script_tags('app') }}
 {% endblock %}
 
