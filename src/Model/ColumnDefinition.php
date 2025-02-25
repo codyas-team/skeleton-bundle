@@ -12,6 +12,7 @@ readonly final class ColumnDefinition
         public ?bool   $sort = false,
         public ?string $sortDirection = 'ASC',
         public ?bool   $renderHtml = false,
+        public ?string $width = "auto"
     )
     {
     }

@@ -3,9 +3,9 @@
 namespace Codyas\SkeletonBundle\Service;
 
 use Codyas\SkeletonBundle\Event\CrudEntityCreatedEvent;
+use Codyas\SkeletonBundle\Event\CrudEntityDeletedEvent;
 use Codyas\SkeletonBundle\Event\CrudEntityPreDeleteEvent;
 use Codyas\SkeletonBundle\Event\CrudEntityPrePersistEvent;
-use Codyas\SkeletonBundle\Event\CrudEntityDeletedEvent;
 use Codyas\SkeletonBundle\Exception\ConfigurationException;
 use Codyas\SkeletonBundle\Exception\InvalidFormException;
 use Codyas\SkeletonBundle\Helper\Constants;
@@ -54,7 +54,7 @@ class CrudService
     public function renderListFromFqdn(string $fqdn, ?array $filterData = []): array
     {
         $entityConfig = $this->getEntityConfiguration($fqdn);
-        if (!$this->authorizationChecker->isGranted(CrudEntityInterface::VIEW, new VoterArgument($entityConfig))){
+        if (!$this->authorizationChecker->isGranted(CrudEntityInterface::VIEW, new VoterArgument($entityConfig))) {
             throw new AccessDeniedException();
         }
         return $this->renderListFromEntityConfig($entityConfig, $filterData);
@@ -62,7 +62,7 @@ class CrudService
 
     public function renderListFromEntityConfig(CrudEntity $entityConfig, ?array $filterData = []): array
     {
-        if (!$this->authorizationChecker->isGranted(CrudEntityInterface::VIEW, new VoterArgument($entityConfig))){
+        if (!$this->authorizationChecker->isGranted(CrudEntityInterface::VIEW, new VoterArgument($entityConfig))) {
             throw new AccessDeniedException();
         }
         $request = $this->requestStack->getCurrentRequest();
@@ -70,12 +70,12 @@ class CrudService
         $filterData['pageSize'] = $request->query->get('pageSize', 10);
         $filterData['page'] = $request->query->get('page', 1);
         $encodedFqdn = $entityConfig->getEncodedFqdn();
-        if (array_key_exists($encodedFqdn, $queryParams ) && $queryParams[$encodedFqdn]) {
+        if (array_key_exists($encodedFqdn, $queryParams) && $queryParams[$encodedFqdn]) {
             $filterData = array_merge($queryParams[$encodedFqdn], $filterData);
         }
         $filterForm = null;
         if ($entityConfig->isFilterable()) {
-            $filterForm = $this->formFactory->createNamed($encodedFqdn, $entityConfig->filterType, $filterData, [
+            $filterForm = $this->formFactory->createNamed($entityConfig->getFlattenedFqdn(), $entityConfig->filterType, $filterData, [
                 'method' => Request::METHOD_GET,
                 'csrf_protection' => false
             ]);
@@ -95,7 +95,7 @@ class CrudService
             $entityConfig = $this->getEntityConfiguration(get_class($instance));
         }
         $voterAttribute = $instance === null ? CrudEntityInterface::CREATE : CrudEntityInterface::EDIT;
-        if (!$this->authorizationChecker->isGranted($voterAttribute, new VoterArgument($entityConfig, $instance))){
+        if (!$this->authorizationChecker->isGranted($voterAttribute, new VoterArgument($entityConfig, $instance))) {
             throw new AccessDeniedException();
         }
 
@@ -180,15 +180,23 @@ class CrudService
                     'entity' => $entityConfig->getEncodedFqdn(),
                 ])
             ] : null;
+            $instanceRows = $item->renderDataTableRow(new RowRendererArguments(
+                $this->translator,
+                $this->router,
+                $this->twig,
+                $this->authorizationChecker,
+                $this->security->getUser()
+            ));
+            if (count($instanceRows) !== count($entityConfig->dataTableColumns)) {
+                throw new ConfigurationException(sprintf("The entity %s::renderDataTableRow should return an array with %s elements, as specified in the column definition; however, it returned an array with %s elements.",
+                    $entityConfig->fqdn,
+                    count($entityConfig->dataTableColumns),
+                    count($instanceRows)
+                ));
+            }
             $response [] = array_merge(
                 $entityConfig->displayRowNumber ? [$key + 1] : [],
-                $item->renderDataTableRow(new RowRendererArguments(
-                    $this->translator,
-                    $this->router,
-                    $this->twig,
-                    $this->authorizationChecker,
-                    $this->security->getUser()
-                )),
+                $instanceRows,
                 $actionButtons,
                 ['instance' => $item]
             );
@@ -248,7 +256,7 @@ class CrudService
             'fqdn' => $entityConfiguration->getFqdnRouteArgument(Constants::ACTION_EDIT)]);
     }
 
-    public function removeInstance(CrudEntityInterface $instance) : void
+    public function removeInstance(CrudEntityInterface $instance): void
     {
         $this->eventDispatcher->dispatch(new CrudEntityPreDeleteEvent($instance));
         $this->em->remove($instance);

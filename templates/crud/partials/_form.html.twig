@@ -1,6 +1,6 @@
 {# @var \Codyas\SkeletonBundle\Model\CrudEntity entityConfig #}
 <div class="row justify-content-center">
-    <div class="col-6">
+    <div class="col-{{ formCardWidth | default("6") }}">
         {% block form_start %}
             {{ form_start(form, {
                 attr: {

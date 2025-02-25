@@ -117,7 +117,7 @@ class UserModel implements UserInterface, PasswordAuthenticatedUserInterface, So
         // $this->plainPassword = null;
     }
 
-    public function getName(): ?string
+    public function getName(): string
     {
         return $this->name;
     }
@@ -182,7 +182,7 @@ class UserModel implements UserInterface, PasswordAuthenticatedUserInterface, So
         return $this;
     }
 
-    public function getAvatar(): File|string|null
+    public function getAvatar(): ?string
     {
         return null;
     }
