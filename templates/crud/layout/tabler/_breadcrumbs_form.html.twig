@@ -5,9 +5,9 @@
         </li>
         <li class="breadcrumb-item"><a
                 href="{{ path(entityConfig.listRoute, {fqdn: entityConfig.customListRoute ? null : entityConfig.encodedFqdn }) }}">
-                {{ entityConfig.headerTranslatableLabel | trans }}
+                {{ entityConfig.headerTranslatableLabel | trans({"%count%" : 2}) }}
             </a></li>
         <li class="breadcrumb-item active" aria-current="page"><a
-                href="#">{{ entityConfig.createTranslatableLabel | trans }}</a></li>
+                href="#">{{ pageTitle }}</a></li>
     </ol>
 </div>

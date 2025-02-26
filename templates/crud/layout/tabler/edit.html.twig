@@ -1,11 +1,11 @@
 {# @var \Codyas\SkeletonBundle\Model\CrudEntity entityConfig #}
 {% extends entityConfig.baseLayout %}
-
+{% set pageTitle = entityConfig.editTranslatableLabel | trans({'%identifier%' : form.vars.value.__toString}) %}
 {% block breadcrumb %}
     {% include '@Skeleton/crud/layout/tabler/_breadcrumbs_form.html.twig' %}
 {% endblock %}
 
-{% block page_title %}{{ entityConfig.editTranslatableLabel | trans({'%identifier%' : form.vars.value.__toString}) }}{% endblock %}
+{% block page_title %}{{ pageTitle }}{% endblock %}
 
 {% block page_subtitle %}{% endblock %}
 

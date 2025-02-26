@@ -7,7 +7,7 @@
         {% for breadcrumb in breadcrumbs %}
             {% if breadcrumb.route != 'item_symfony_route' %}
                 <li class="breadcrumb-item">
-                    <a href="{{ path(breadcrumb.route) }}">{{ breadcrumb.label }}</a>
+                    <a href="{{ path(breadcrumb.route) }}">{{ breadcrumb.label | trans({"%count%" : 2}) }}</a>
                 </li>
             {% endif %}
 
