@@ -13,4 +13,6 @@ interface CrudEntityInterface
     public function getId(): ?int;
 
     public function renderDataTableRow(RowRendererArguments $arguments): array;
+
+    public function __toString(): string;
 }

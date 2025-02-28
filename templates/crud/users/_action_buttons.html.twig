@@ -5,19 +5,19 @@
         'id': instance.id,
         'fqdn': entityConfig.customEditRoute ? null : fqdn
     }) }}"
-       class="btn btn-x w-100 btn-icon btn-sm"
+       class="btn  w-100 btn-icon btn-sm"
        data-toggle="tooltip"
        title="{{ "Edit" | trans({}, 'SkeletonBundle') }}"
        aria-label="{{ "Edit" | trans({}, 'SkeletonBundle') }}">
         <i class="fa fa-edit"></i>
     </a>
-    <button class="btn btn-x w-100 btn-icon btn-sm"
+    <button class="btn  w-100 btn-icon btn-sm"
             data-toggle="tooltip"
             title="{{ "Change password" | trans({}, 'SkeletonBundle') }}"
             aria-label="{{ "Change password" | trans({}, 'SkeletonBundle') }}">
         <i class="fa fa-key"></i>
     </button>
-    <button class="btn btn-x w-100 btn-icon btn-sm text-red"
+    <button class="btn  w-100 btn-icon btn-sm text-red"
             data-action="csk-crud-table-record#requestDelete"
             data-toggle="tooltip"
             title="{{ "Delete record" | trans({}, 'SkeletonBundle') }}"

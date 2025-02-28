@@ -1,7 +1,7 @@
 {# @var \Codyas\SkeletonBundle\Model\CrudEntity entityConfig #}
 {% extends entityConfig.baseLayout %}
 {% set fqdn = entityConfig.encodedFqdn %}
-{% block page_title %}{{ entityConfig.headerTranslatableLabel | trans }}{% endblock %}
+{% block page_title %}{{ entityConfig.headerTranslatableLabel | trans({"%count%":2}) }}{% endblock %}
 
 {% block page_subtitle %}
     <div class="text-body-secondary mt-1">
@@ -18,14 +18,14 @@
     <div class="btn-list">
         <a href="{{ path(entityConfig.createRoute, {'fqdn': entityConfig.customCreateRoute ? null : fqdn}) }}"
            class="btn btn-primary d-none d-sm-inline-block">
-            {{ entityConfig.createTranslatableLabel | trans }}
+            {{ entityConfig.createTranslatableLabel | trans({"%count%":1}) }}
         </a>
     </div>
 {% endblock %}
 
 {% block body_start %}
     data-controller="csk-crud csk-notify"
-    data-csk-crud-generic-delete-msg-value="{{ 'Something went wrong while deleting the record. Please try again later.' | trans }}"
+    data-csk-crud-generic-delete-msg-value="{{ 'Something went wrong while deleting the record. Please try again later.' | trans({}, 'SkeletonBundle') }}"
     data-csk-notify-alerts-value="{{ app.flashes('csk-non-blocking-alerts') | json_encode }}"
     data-action="csk-crud-table-record:deleteRecord@window->csk-crud#showDeleteDialog"
 {% endblock %}
@@ -46,14 +46,14 @@
                     </div>
                     <div class="card-footer">
                         <div class="row justify-content-center">
-                            {#                            <div class="col-5">#}
-                            {#                                <button type="reset" class="btn w-100 btn-secondary ">#}
-                            {#                                    {{ "Clear" | trans }}#}
-                            {#                                </button>#}
-                            {#                            </div>#}
+                            {#                            <div class="col-5"> #}
+                            {#                                <button type="reset" class="btn w-100 btn-secondary "> #}
+                            {#                                    {{ "Clear" | trans }} #}
+                            {#                                </button> #}
+                            {#                            </div> #}
                             <div class="col-6">
                                 <button type="submit" class="btn w-100 btn-primary">
-                                    {{ "Apply" | trans }}
+                                    {{ "Apply" | trans({}, 'SkeletonBundle') }}
                                 </button>
                             </div>
                         </div>
@@ -71,26 +71,26 @@
                                data-controller="csk-crud-table"
                                data-csk-crud-table-load-url-value="{{ path('csk_crud_fetch', {'fqdn' : entityConfig.encodedFqdn}) }}">
                             <thead>
+                            {% set columnsDefinition = entityConfig.dataTableColumnDefinition %}
                             <tr>
-                                {% if entityConfig.displayRowNumber %}
-                                    <th>{{ "Number" | trans({}, "SkeletonBundle") }}</th>
-                                {% endif %}
-                                {# @var \Codyas\SkeletonBundle\Model\ColumnDefinition column #}
-                                {% for column in entityConfig.dataTableColumns %}
+                                {% for column in columnsDefinition %}
                                     <th>
                                         {% if column.sort %}
                                             <button class="table-sort"
-                                                    data-sort="{{ column.propertyKey }}">{{ column.label }}</button>
+                                                    data-sort="{{ column.propertyKey }}">{{ column.label | trans({"%count%": 1}) }}</button>
                                         {% else %}
-                                            {{ column.label }}
+                                            {{ column.label | trans({"%count%": 1}) }}
                                         {% endif %}
                                     </th>
                                 {% endfor %}
-                                {% if entityConfig.displayActionsButtons %}
-                                    <th></th>
-                                {% endif %}
                             </tr>
                             </thead>
+                            <colgroup>
+                                {# @var \Codyas\SkeletonBundle\Model\ColumnDefinition column #}
+                                {% for column in columnsDefinition %}
+                                    <col style="width: {{ column.width }};">
+                                {% endfor %}
+                            </colgroup>
                             <tbody class="table-tbody">
                             {% for itemColums in items %}
                                 <tr
@@ -103,10 +103,12 @@
                                     {% for column in 1..entityConfig.columnCount %}
                                         {% apply spaceless %}
                                             <td class="align-middle">
-                                                {% if loop.last and entityConfig.displayActionsButtons %}
+                                                {% if loop.first and entityConfig.displayRowNumber %}
+                                                    {{ loop.index }}
+                                                {% elseif loop.index0 == entityConfig.columnCount and entityConfig.displayActionsButtons %}
                                                     {{ itemColums[loop.index0] | raw }}
                                                 {% else %}
-                                                    {% if entityConfig.dataTableColumns[column-1].renderHtml %}
+                                                    {% if columnsDefinition[column-1].renderHtml %}
                                                         {{ itemColums[loop.index0] | raw }}
                                                     {% else %}
                                                         {{ itemColums[loop.index0] }}
@@ -126,7 +128,7 @@
                         <div class="p-5 text-center text-muted">
                             <h3 class="fw-normal">
                                 <i class="fa fa-inbox d-block fa-5x mb-3"></i>
-                                {{ "There are no results to display." | trans }}
+                                {{ "There are no results to display." | trans({}, 'SkeletonBundle') }}
                             </h3>
                         </div>
                     {% endif %}
@@ -140,7 +142,8 @@
     <div class="modal modal-blur fade" id="deleteDialog" tabindex="-1" data-csk-crud-target="deleteDialog">
         <div class="modal-dialog modal-sm modal-dialog-centered" role="document">
             <div class="modal-content">
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ "Close" | trans }}"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                        aria-label="{{ "Close" | trans({}, 'SkeletonBundle') }}"></button>
                 <div class="modal-status bg-danger"></div>
                 <div class="modal-body text-center py-4">
                     <svg xmlns="http://www.w3.org/2000/svg" class="icon mb-2 text-danger icon-lg" width="24" height="24"
@@ -151,9 +154,9 @@
                         <path
                             d="M5 19h14a2 2 0 0 0 1.84 -2.75l-7.1 -12.25a2 2 0 0 0 -3.5 0l-7.1 12.25a2 2 0 0 0 1.75 2.75"/>
                     </svg>
-                    <h3>{{ "Please confirm" | trans }}</h3>
+                    <h3>{{ "Please confirm" | trans({}, 'SkeletonBundle') }}</h3>
                     <div class="text-secondary">
-                        {{ "Do you really want to remove this item? This action cannot be undone." | trans }}
+                        {{ "Do you really want to remove this item? This action cannot be undone." | trans({}, 'SkeletonBundle') }}
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -161,7 +164,7 @@
                         <div class="row">
                             <div class="col">
                                 <a href="#" class="btn w-100" data-bs-dismiss="modal">
-                                    {{ "Cancel" | trans }}
+                                    {{ "Cancel" | trans({}, 'SkeletonBundle') }}
                                 </a>
                             </div>
                             <div class="col">
@@ -169,7 +172,7 @@
                                         data-action="csk-crud#deleteRecord"
                                         data-csk-crud-target="deleteDialogButton"
                                 >
-                                    {{ "Delete" | trans }}
+                                    {{ "Delete" | trans({}, 'SkeletonBundle') }}
                                 </button>
                             </div>
                         </div>

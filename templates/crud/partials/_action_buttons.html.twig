@@ -5,7 +5,7 @@
         'id': instance.id,
         'fqdn': entityConfig.customEditRoute ? null : fqdn
     }) }}"
-       class="btn btn-x w-100 btn-icon btn-sm"
+       class="btn  w-100 btn-icon btn-sm"
        data-toggle="tooltip"
        title="{{ "Edit" | trans({}, 'SkeletonBundle') }}"
        aria-label="{{ "Edit" | trans({}, 'SkeletonBundle') }}">
@@ -21,12 +21,12 @@
                 data-load-url="{{ path(dialog.loadUrl, {'id': instance.id}) }}"
                 title="{{ dialog.actionLauncherDefinition.title | trans }}"
                 aria-label="{{ dialog.actionLauncherDefinition.title | trans }}"
-                class="btn btn-x w-100 btn-icon btn-sm {{ dialog.actionLauncherDefinition.cssClass }}">
+                class="btn  w-100 btn-icon btn-sm {{ dialog.actionLauncherDefinition.cssClass }}">
                 <i class="{{ dialog.actionLauncherDefinition.icon }}"></i>
             </button>
         {% endif %}
     {% endfor %}
-    <button class="btn btn-x w-100 btn-icon btn-sm text-red"
+    <button class="btn  w-100 btn-icon btn-sm text-red"
             data-action="csk-crud-table-record#requestDelete"
             data-toggle="tooltip"
             title="{{ "Delete record" | trans({}, 'SkeletonBundle') }}"
