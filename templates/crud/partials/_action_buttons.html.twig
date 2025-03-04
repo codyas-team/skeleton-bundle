@@ -26,11 +26,13 @@
             </button>
         {% endif %}
     {% endfor %}
-    <button class="btn  w-100 btn-icon btn-sm text-red"
-            data-action="csk-crud-table-record#requestDelete"
-            data-toggle="tooltip"
-            title="{{ "Delete record" | trans({}, 'SkeletonBundle') }}"
-            aria-label="{{ "Delete record" | trans({}, 'SkeletonBundle') }}">
-        <i class="fa fa-trash"></i>
-    </button>
+    {% if instance.isNomenclator is not defined %}
+        <button class="btn  w-100 btn-icon btn-sm text-red"
+                data-action="csk-crud-table-record#requestDelete"
+                data-toggle="tooltip"
+                title="{{ "Delete record" | trans({}, 'SkeletonBundle') }}"
+                aria-label="{{ "Delete record" | trans({}, 'SkeletonBundle') }}">
+            <i class="fa fa-trash"></i>
+        </button>
+    {% endif %}
 </div>

@@ -35,6 +35,9 @@ class CrudEntity
         public ?bool           $customFetch = false,
         public ?string         $genericFormLabel = null,
         public ?array          $dialogs = null,
+        public ?bool           $displayNomenclatorStatusColumn = false,
+        public ?string         $nomenclatorStatusColumnWidth = '15%',
+        public ?string         $nomenclatorStatusColumnTemplate = '@Skeleton/crud/partials/_nomenclator_status.html.twig',
         public VoterDefinition $voter = new VoterDefinition(RoleVoter::class, arguments: [
             CrudEntityInterface::LIST => 'ROLE_ADMIN',
             CrudEntityInterface::VIEW => 'ROLE_ADMIN',
@@ -136,6 +139,9 @@ class CrudEntity
         if ($this->displayRowNumber) {
             $count++;
         }
+        if ($this->displayNomenclatorStatusColumn) {
+            $count++;
+        }
         if ($this->displayActionsButtons) {
             $count++;
         }
@@ -170,12 +176,18 @@ class CrudEntity
 
     public function getDataTableColumnDefinition(): array
     {
-        $columnDefinition = $this->dataTableColumns;
+        $columnDefinition = [];
         if ($this->displayRowNumber === true) {
             $columnDefinition = array_merge([
                 new ColumnDefinition(label: "", width: "5%")
             ], $columnDefinition);
         }
+        if ($this->displayNomenclatorStatusColumn === true){
+            $columnDefinition = array_merge($columnDefinition, [
+                new ColumnDefinition(label: "Status", width: $this->nomenclatorStatusColumnWidth, renderHtml: true)
+            ]);
+        }
+        $columnDefinition = array_merge($columnDefinition, $this->dataTableColumns);
         if ($this->displayActionsButtons) {
             $columnDefinition = array_merge($columnDefinition, [
                 new ColumnDefinition(label: "", renderHtml: true, width: $this->actionButtonsColumnWidth)

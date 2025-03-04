@@ -201,6 +201,9 @@ class CrudService
             }
             $response [] = array_merge(
                 $entityConfig->displayRowNumber ? [$key + 1] : [],
+                $entityConfig->displayNomenclatorStatusColumn ? [$this->twig->render($entityConfig->nomenclatorStatusColumnTemplate, [
+                    'instance' => $item
+                ])] : [],
                 $instanceRows,
                 $actionButtons,
                 ['instance' => $item]
