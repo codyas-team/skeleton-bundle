@@ -75,10 +75,15 @@ class CrudService
         }
         $filterForm = null;
         if ($entityConfig->isFilterable()) {
-            $filterForm = $this->formFactory->createNamed($entityConfig->getFlattenedFqdn(), $entityConfig->filterType, $filterData, [
-                'method' => Request::METHOD_GET,
-                'csrf_protection' => false
-            ]);
+            $filterForm = $this->formFactory->createNamed(
+                $entityConfig->getFlattenedFqdn(),
+                $entityConfig->filterType,
+                $filterData,
+                array_merge(
+                    $entityConfig->filterTypeOptions, [
+                    'method' => Request::METHOD_GET,
+                    'csrf_protection' => false
+                ]));
         }
         $pagination = $this->buildPagination($entityConfig, $filterForm);
         return [$entityConfig->getListTemplate(), [

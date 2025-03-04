@@ -5,7 +5,7 @@
 
 {% block page_subtitle %}
     <div class="text-body-secondary mt-1">
-        {{ "%itemsPerPage% of %total% records" | trans({"%itemsPerPage%":(items | length), "%total%": pagination.totalItemCount}) }}
+        {{ "%itemsPerPage% of %total% records" | trans({"%itemsPerPage%":(items | length), "%total%": pagination.totalItemCount}, 'SkeletonBundle') }}
     </div>
 {% endblock %}
 
@@ -104,7 +104,7 @@
                                         {% apply spaceless %}
                                             <td class="align-middle">
                                                 {% if loop.first and entityConfig.displayRowNumber %}
-                                                    {{ loop.index }}
+                                                    {{ loop.parent.loop.index }}
                                                 {% elseif loop.index0 == entityConfig.columnCount and entityConfig.displayActionsButtons %}
                                                     {{ itemColums[loop.index0] | raw }}
                                                 {% else %}

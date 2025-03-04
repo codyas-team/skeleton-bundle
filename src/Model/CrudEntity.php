@@ -21,6 +21,7 @@ class CrudEntity
         public ?string         $customDeleteRoute = 'csk_crud_delete',
         public ?string         $formTemplate = '@Skeleton/crud/partials/_form.html.twig',
         public ?string         $filterType = null,
+        public ?array          $filterTypeOptions = [],
         public ?string         $filterTemplate = '@Skeleton/crud/partials/_form_filter.html.twig',
         public ?string         $actionButtonsTemplate = '@Skeleton/crud/partials/_action_buttons.html.twig',
         public ?string         $actionButtonsColumnWidth = '10%',
@@ -162,20 +163,20 @@ class CrudEntity
         return $voterFqdn === $this->voter->voterClass;
     }
 
-    public function getFlattenedFqdn() :string
+    public function getFlattenedFqdn(): string
     {
         return str_replace("\\", "__", $this->fqdn);
     }
 
-    public function getDataTableColumnDefinition() : array
+    public function getDataTableColumnDefinition(): array
     {
         $columnDefinition = $this->dataTableColumns;
-        if ($this->displayRowNumber === true){
+        if ($this->displayRowNumber === true) {
             $columnDefinition = array_merge([
                 new ColumnDefinition(label: "", width: "5%")
             ], $columnDefinition);
         }
-        if ($this->displayActionsButtons){
+        if ($this->displayActionsButtons) {
             $columnDefinition = array_merge($columnDefinition, [
                 new ColumnDefinition(label: "", renderHtml: true, width: $this->actionButtonsColumnWidth)
             ]);
