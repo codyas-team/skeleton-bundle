@@ -46,7 +46,13 @@ class CrudController extends AbstractController
     #[Route('/', name: "csk_crud_list", methods: [Request::METHOD_GET])]
     public function list(Request $request)
     {
-        // TODO
+        throw new \RuntimeException("Generic list action not implemented yet. Implement your own.");
+    }
+
+    #[Route('/', name: "csk_crud_details", methods: [Request::METHOD_GET])]
+    public function details(Request $request)
+    {
+        throw new \RuntimeException("Generic details action not implemented yet. Implement your own.");
     }
 
     #[Route('/fetch', name: "csk_crud_fetch", methods: [Request::METHOD_GET])]

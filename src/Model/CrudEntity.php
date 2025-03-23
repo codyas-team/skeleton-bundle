@@ -16,6 +16,7 @@ class CrudEntity
         public string          $formType,
         public array           $dataTableColumns,
         public ?string         $customListRoute = null,
+        public ?string         $customDetailsRoute = null,
         public ?string         $customCreateRoute = null,
         public ?string         $customEditRoute = null,
         public ?string         $customDeleteRoute = 'csk_crud_delete',
@@ -29,6 +30,7 @@ class CrudEntity
         public ?TemplateEnum   $template = TemplateEnum::Tabler,
         public ?TemplateEnum   $layout = TemplateEnum::TablerLayoutHorizontal,
         public ?string         $customListTemplate = null,
+        public ?string         $customDetailsTemplate = null,
         public ?string         $customCreateTemplate = null,
         public ?string         $customEditTemplate = null,
         public ?bool           $displayRowNumber = true,
@@ -41,6 +43,7 @@ class CrudEntity
         public VoterDefinition $voter = new VoterDefinition(RoleVoter::class, arguments: [
             CrudEntityInterface::LIST => 'ROLE_ADMIN',
             CrudEntityInterface::VIEW => 'ROLE_ADMIN',
+            CrudEntityInterface::DETAILS => 'ROLE_ADMIN',
             CrudEntityInterface::CREATE => 'ROLE_ADMIN',
             CrudEntityInterface::EDIT => 'ROLE_ADMIN',
             CrudEntityInterface::DELETE => 'ROLE_ADMIN'
@@ -65,6 +68,17 @@ class CrudEntity
         }
         return match ($this->template) {
             TemplateEnum::Tabler => '@Skeleton/crud/layout/tabler/list.html.twig',
+            default => throw new ConfigurationException("Unsupported template {$this->template->name}. Make sure the template is registered in Codyas\SkeletonBundle\Model\TemplateEnum.")
+        };
+    }
+
+    public function getDetailsTemplate(): string
+    {
+        if ($this->customDetailsTemplate) {
+            return $this->customDetailsTemplate;
+        }
+        return match ($this->template) {
+            TemplateEnum::Tabler => '@Skeleton/crud/layout/tabler/details.html.twig',
             default => throw new ConfigurationException("Unsupported template {$this->template->name}. Make sure the template is registered in Codyas\SkeletonBundle\Model\TemplateEnum.")
         };
     }
@@ -101,6 +115,7 @@ class CrudEntity
         $baseFqdn = base64_encode($this->fqdn);
         return match ($action) {
             Constants::ACTION_LIST => $this->customListRoute ? null : $baseFqdn,
+            Constants::ACTION_DETAILS => $this->customDetailsRoute ? null : $baseFqdn,
             Constants::ACTION_CREATE => $this->customCreateRoute ? null : $baseFqdn,
             Constants::ACTION_EDIT => $this->customEditRoute ? null : $baseFqdn,
             Constants::ACTION_DELETE => $baseFqdn,
@@ -152,6 +167,11 @@ class CrudEntity
     public function getListRoute(): ?string
     {
         return $this->customListRoute ?: 'csk_crud_list';
+    }
+
+    public function getDetailsRoute(): ?string
+    {
+        return $this->customDetailsRoute ?: 'csk_crud_details';
     }
 
     public function getCreateRoute(): ?string

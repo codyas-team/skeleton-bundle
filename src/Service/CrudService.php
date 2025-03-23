@@ -54,7 +54,7 @@ class CrudService
     public function renderListFromFqdn(string $fqdn, ?array $filterData = []): array
     {
         $entityConfig = $this->getEntityConfiguration($fqdn);
-        if (!$this->authorizationChecker->isGranted(CrudEntityInterface::VIEW, new VoterArgument($entityConfig))) {
+        if (!$this->authorizationChecker->isGranted(CrudEntityInterface::LIST, new VoterArgument($entityConfig))) {
             throw new AccessDeniedException();
         }
         return $this->renderListFromEntityConfig($entityConfig, $filterData);
@@ -62,7 +62,7 @@ class CrudService
 
     public function renderListFromEntityConfig(CrudEntity $entityConfig, ?array $filterData = []): array
     {
-        if (!$this->authorizationChecker->isGranted(CrudEntityInterface::VIEW, new VoterArgument($entityConfig))) {
+        if (!$this->authorizationChecker->isGranted(CrudEntityInterface::LIST, new VoterArgument($entityConfig))) {
             throw new AccessDeniedException();
         }
         $request = $this->requestStack->getCurrentRequest();
@@ -91,6 +91,17 @@ class CrudService
             'filterForm' => $filterForm?->createView(),
             'pagination' => $pagination,
             'items' => $this->buildResponse($pagination, $entityConfig)
+        ]];
+    }
+
+    public function renderDetailsFromEntityConfig(CrudEntity $entityConfig, ?CrudEntityInterface $instance = null): array
+    {
+        if (!$this->authorizationChecker->isGranted(CrudEntityInterface::DETAILS, new VoterArgument($entityConfig, $instance))) {
+            throw new AccessDeniedException();
+        }
+        return [$entityConfig->getDetailsTemplate(), [
+            'entityConfig' => $entityConfig,
+            'instance' => $instance
         ]];
     }
 

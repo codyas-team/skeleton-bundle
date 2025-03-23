@@ -20,6 +20,8 @@ class RoleVoter extends Voter
     {
         if (!in_array($attribute, [
             CrudEntityInterface::VIEW,
+            CrudEntityInterface::LIST,
+            CrudEntityInterface::DETAILS,
             CrudEntityInterface::CREATE,
             CrudEntityInterface::EDIT,
             CrudEntityInterface::DELETE
