@@ -31,6 +31,7 @@ class CrudEntity
         public ?TemplateEnum   $layout = TemplateEnum::TablerLayoutHorizontal,
         public ?string         $customListTemplate = null,
         public ?string         $customDetailsTemplate = null,
+        public ?string         $detailsContentTemplate = null,
         public ?string         $customCreateTemplate = null,
         public ?string         $customEditTemplate = null,
         public ?bool           $displayRowNumber = true,
