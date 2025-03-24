@@ -26,6 +26,7 @@ class SkeletonExtension extends AbstractExtension
         return [
             new TwigFunction('csk_option', [RuntimeExtension::class, 'getOption']),
             new TwigFunction('csk_menu_breadcrumb', [RuntimeExtension::class, 'getMenuBreadcrumb']),
+            new TwigFunction('csk_is_authorized', [RuntimeExtension::class, 'isAuthorized']),
         ];
     }
 }

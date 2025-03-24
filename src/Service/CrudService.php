@@ -20,11 +20,11 @@ use Knp\Component\Pager\Pagination\PaginationInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use Symfony\Component\Finder\Exception\AccessDeniedException;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
@@ -94,11 +94,10 @@ class CrudService
         ]];
     }
 
-    public function renderDetailsFromEntityConfig(CrudEntity $entityConfig, ?CrudEntityInterface $instance = null): array
+    public function renderDetails(CrudEntityInterface $instance): array
     {
-        if (!$this->authorizationChecker->isGranted(CrudEntityInterface::DETAILS, new VoterArgument($entityConfig, $instance))) {
-            throw new AccessDeniedException();
-        }
+        $entityConfig = $this->getEntityConfiguration(get_class($instance));
+        $this->denyAccessUnlessGranted(CrudEntityInterface::DETAILS, $entityConfig, $instance);
         return [$entityConfig->getDetailsTemplate(), [
             'entityConfig' => $entityConfig,
             'instance' => $instance
@@ -111,9 +110,7 @@ class CrudService
             $entityConfig = $this->getEntityConfiguration(get_class($instance));
         }
         $voterAttribute = $instance === null ? CrudEntityInterface::CREATE : CrudEntityInterface::EDIT;
-        if (!$this->authorizationChecker->isGranted($voterAttribute, new VoterArgument($entityConfig, $instance))) {
-            throw new AccessDeniedException();
-        }
+        $this->denyAccessUnlessGranted($voterAttribute, $entityConfig, $instance);
 
         $formType = $entityConfig->formType;
         $actionUrl = $this->generateInstanceActionUrl($instance, $entityConfig);
@@ -281,5 +278,17 @@ class CrudService
         $this->em->remove($instance);
         $this->em->flush();
         $this->eventDispatcher->dispatch(new CrudEntityDeletedEvent($instance));
+    }
+
+    public function isAuthorized(string $attribute, CrudEntity $entityConfig, ?CrudEntityInterface $instance): bool
+    {
+        return $this->authorizationChecker->isGranted($attribute, new VoterArgument($entityConfig, $instance));
+    }
+
+    public function denyAccessUnlessGranted(string $attribute, CrudEntity $entityConfig, ?CrudEntityInterface $instance) : void
+    {
+        if (!$this->isAuthorized($attribute, $entityConfig, $instance)) {
+            throw new AccessDeniedHttpException();
+        }
     }
 }

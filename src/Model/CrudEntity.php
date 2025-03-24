@@ -31,7 +31,7 @@ class CrudEntity
         public ?TemplateEnum   $layout = TemplateEnum::TablerLayoutHorizontal,
         public ?string         $customListTemplate = null,
         public ?string         $customDetailsTemplate = null,
-        public ?string         $detailsContentTemplate = null,
+        public ?string         $detailsContentTemplate = "",
         public ?string         $customCreateTemplate = null,
         public ?string         $customEditTemplate = null,
         public ?bool           $displayRowNumber = true,
@@ -216,6 +216,14 @@ class CrudEntity
         }
         return $columnDefinition;
 
+    }
+
+    public function getInstanceDetailsContentTemplate() : string
+    {
+        if (!$this->detailsContentTemplate){
+            throw new ConfigurationException("Entity {$this->fqdn} is not properly configured for display details. Please set \"detailsContentTemplate\" in entity configuration.");
+        }
+        return $this->detailsContentTemplate;
     }
 
 }

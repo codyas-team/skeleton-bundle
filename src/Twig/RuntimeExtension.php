@@ -3,6 +3,9 @@
 namespace Codyas\SkeletonBundle\Twig;
 
 use Codyas\SkeletonBundle\Exception\ConfigurationException;
+use Codyas\SkeletonBundle\Model\CrudEntity;
+use Codyas\SkeletonBundle\Model\CrudEntityInterface;
+use Codyas\SkeletonBundle\Service\CrudService;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Twig\Extension\RuntimeExtensionInterface;
@@ -11,7 +14,7 @@ final class RuntimeExtension implements RuntimeExtensionInterface
 {
     public function __construct(
         readonly private EventDispatcherInterface $eventDispatcher,
-        readonly private ParameterBagInterface    $parameterBag
+        readonly private ParameterBagInterface    $parameterBag, private readonly CrudService $crudService
     )
     {
     }
@@ -48,6 +51,11 @@ final class RuntimeExtension implements RuntimeExtensionInterface
             $breadcrumbs = array_merge($breadcrumbs, [$menuItem], $this->getMenuBreadcrumb($menuItem->getChildren()));
         }
         return $breadcrumbs;
+    }
+
+    public function isAuthorized(string $attribute, CrudEntity $entityConfig, CrudEntityInterface $instance): bool
+    {
+        return $this->crudService->isAuthorized($attribute, $entityConfig, $instance);
     }
 
 }
