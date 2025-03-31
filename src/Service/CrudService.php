@@ -4,6 +4,7 @@ namespace Codyas\SkeletonBundle\Service;
 
 use Codyas\SkeletonBundle\Event\CrudEntityCreatedEvent;
 use Codyas\SkeletonBundle\Event\CrudEntityDeletedEvent;
+use Codyas\SkeletonBundle\Event\CrudEntityModifiedEvent;
 use Codyas\SkeletonBundle\Event\CrudEntityPreDeleteEvent;
 use Codyas\SkeletonBundle\Event\CrudEntityPrePersistEvent;
 use Codyas\SkeletonBundle\Exception\ConfigurationException;
@@ -234,6 +235,7 @@ class CrudService
 
     public function handleFormSubmission(CrudEntityInterface $instance, CrudEntity $entityConfig, Request $request): CrudEntityInterface|array
     {
+        $isModification = $instance->getId() !== null;
         $formType = $entityConfig->formType;
         $form = $this->formFactory->create($formType, $instance, [
             'action' => $this->generateInstanceActionUrl($instance, $entityConfig)
@@ -245,7 +247,8 @@ class CrudService
         $this->eventDispatcher->dispatch(new CrudEntityPrePersistEvent($instance, $form));
         $this->em->persist($instance);
         $this->em->flush();
-        $this->eventDispatcher->dispatch(new CrudEntityCreatedEvent($instance));
+        $event = $isModification ? new CrudEntityModifiedEvent($instance) : new CrudEntityCreatedEvent($instance);
+        $this->eventDispatcher->dispatch($event);
 
         return $instance;
     }
