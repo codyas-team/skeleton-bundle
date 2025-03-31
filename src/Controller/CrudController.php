@@ -115,6 +115,28 @@ class CrudController extends AbstractController
         return $this->json([]);
     }
 
+    public function autoConfiguredList(Request $request): Response
+    {
+        return $this->render(...$this->crudService->renderListFromFqdn($this->entityConfiguration->fqdn));
+    }
+
+    public function autoConfiguredCreate(Request $request): Response
+    {
+        return $this->render(...$this->crudService->renderForm(instance: new $this->entityConfiguration->fqdn));
+    }
+
+    public function autoConfiguredEdit(int $id, Request $request): Response
+    {
+        $instance = $this->em->getRepository($this->entityConfiguration->fqdn)->find($id);
+        return $this->render(...$this->crudService->renderForm(instance: $instance));
+    }
+
+    public function autoConfiguredDetails(int $id, Request $request): Response
+    {
+        $instance = $this->em->getRepository($this->entityConfiguration->fqdn)->find($id);
+        return $this->render(...$this->crudService->renderDetails(instance: $instance));
+    }
+
     public function setEntityConfiguration(CrudEntity $entityConfiguration): static
     {
         $this->entityConfiguration = $entityConfiguration;

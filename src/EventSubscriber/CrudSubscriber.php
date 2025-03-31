@@ -23,7 +23,11 @@ class CrudSubscriber implements EventSubscriberInterface
         if (!$controller instanceof CrudController) {
             return;
         }
-        $fqdn = base64_decode($request->get('fqdn'));
+        if ($request->attributes->get('autoconfigured') === true) {
+            $fqdn = $request->attributes->get('fqdn');
+        } else {
+            $fqdn = base64_decode($request->get('fqdn'));
+        }
         $controller->setEntityConfiguration($this->crudService->getEntityConfiguration($fqdn));
     }
 

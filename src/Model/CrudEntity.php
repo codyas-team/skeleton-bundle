@@ -41,6 +41,11 @@ class CrudEntity
         public ?bool           $displayNomenclatorStatusColumn = false,
         public ?string         $nomenclatorStatusColumnWidth = '15%',
         public ?string         $nomenclatorStatusColumnTemplate = '@Skeleton/crud/partials/_nomenclator_status.html.twig',
+        public ?bool           $autoConfigureRoutes = false,
+        public ?string         $autoConfigurationListPath = null,
+        public ?string         $autoConfigurationDetailsPath = null,
+        public ?string         $autoConfigurationCreatePath = null,
+        public ?string         $autoConfigurationEditPath = null,
         public VoterDefinition $voter = new VoterDefinition(RoleVoter::class, arguments: [
             CrudEntityInterface::LIST => 'ROLE_ADMIN',
             CrudEntityInterface::VIEW => 'ROLE_ADMIN',
@@ -203,7 +208,7 @@ class CrudEntity
                 new ColumnDefinition(label: "", width: "5%")
             ], $columnDefinition);
         }
-        if ($this->displayNomenclatorStatusColumn === true){
+        if ($this->displayNomenclatorStatusColumn === true) {
             $columnDefinition = array_merge($columnDefinition, [
                 new ColumnDefinition(label: "Status", width: $this->nomenclatorStatusColumnWidth, renderHtml: true)
             ]);
@@ -218,9 +223,9 @@ class CrudEntity
 
     }
 
-    public function getInstanceDetailsContentTemplate() : string
+    public function getInstanceDetailsContentTemplate(): string
     {
-        if (!$this->detailsContentTemplate){
+        if (!$this->detailsContentTemplate) {
             throw new ConfigurationException("Entity {$this->fqdn} is not properly configured for display details. Please set \"detailsContentTemplate\" in entity configuration.");
         }
         return $this->detailsContentTemplate;
