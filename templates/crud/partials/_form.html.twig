@@ -17,12 +17,52 @@
                 </h3>
             </div>
             <div class="card-body">
+                {% if form.deletedAt is defined %}
+                    <div class="d-none">
+                        {{ form_row(form.deletedAt) }}
+                    </div>
+                {% endif %}
                 {% block form_body %}
                     {{ form_rest(form) }}
                 {% endblock %}
+                {% if form.vars.value.isNomenclator is defined %}
+                    <div class="card ">
+                        {% if form.vars.value.deletedAt is defined and form.vars.value.deletedAt %}
+                            <div class="ribbon bg-red">{{ "Closed" | trans({}, 'SkeletonBundle') }}</div>
+                        {% else %}
+                            <div class="ribbon bg-success">{{ "Open" | trans({}, 'SkeletonBundle') }}</div>
+                        {% endif %}
+
+                        <div class="card-header">
+                            <h5 class="card-title">
+                                <i class="fa fa-cog"></i>
+                                {{ "Nomenclator control" | trans({}, 'SkeletonBundle') }}
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            {% if form.deletedAt is defined %}
+                                <label class="form-check form-switch form-switch-3">
+                                    <input
+                                        data-controller="csk-crud-nomenclator-manager"
+                                        data-action="change->csk-crud-nomenclator-manager#handle"
+                                        data-csk-crud-nomenclator-manager-control-field-value="{{ form.deletedAt.vars.id }}"
+                                        class="form-check-input"
+                                        type="checkbox" {{ form.vars.value.deletedAt is defined and form.vars.value.deletedAt ? "checked" : "" }}>
+                                    <span class="form-check-label">{{ "Close record" | trans({}, 'SkeletonBundle') }}</span>
+                                    <small>{{ "When a record is closed, it cannot be referenced when creating new records; however, records already using it will retain the reference. A closed record can be reopened at any time." | trans({}, 'SkeletonBundle') }}</small>
+                                </label>
+                            {% else %}
+                                <div class="alert alert-warning">
+                                    <h4 class="alert-title">{{ "Missconfigured entity" | trans({}, 'SkeletonBundle') }}</h4>
+                                    {{ "The control fields had not been configured for this record type. Please add the proper configuration fields." | trans({}, 'SkeletonBundle') }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endif %}
             </div>
             <div class="card-footer text-end">
-                <twig:BsFormButtons :entityConfig="entityConfig" />
+                <twig:BsFormButtons :entityConfig="entityConfig"/>
             </div>
         </div>
         {{ form_end(form) }}

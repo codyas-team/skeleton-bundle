@@ -20,3 +20,8 @@ This record is closed. You cannot assign it to other resources.: "Este registro 
 Closed: "Cerrado"
 The record is open, you can assign it to any other resource.: "El registro está abierto, puedes asignarlo a cualquier otro recurso."
 Open: "Abierto"
+Nomenclator control: "Control de registro"
+Close record: "Cerrar registro"
+When a record is closed, it cannot be referenced when creating new records; however, records already using it will retain the reference. A closed record can be reopened at any time.: "Cuando un registro está cerrado, no puede ser referenciado al crear otros registros, sin embargo los que ya lo estén usando mantenedrán la referencia. Un registro cerrado puede volver a ser abierto en cualquier momento."
+Missconfigured entity: "Registro de control mal configurado"
+The control fields had not been configured for this record type. Please add the proper configuration fields.: "Los campos de control no se configuraron para este tipo de registro. Agregue los campos de configuración adecuados."
