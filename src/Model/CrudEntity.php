@@ -197,8 +197,16 @@ class CrudEntity
 
     public function getFlattenedFqdn(): string
     {
-        return str_replace("\\", "__", $this->fqdn);
+        return $this->normalizeString($this->label);
     }
+
+    function normalizeString(string $input): string
+    {
+        $normalized = mb_strtolower($input, 'UTF-8');
+        $normalized = preg_replace('/[^a-z0-9\s-]/', '', $normalized);
+        return preg_replace('/[\s-]+/', '-', $normalized);
+    }
+
 
     public function getDataTableColumnDefinition(): array
     {
