@@ -72,12 +72,8 @@ class AutoConfigurationRouteLoader extends Loader
                 if ($crudEntity->autoConfigureRoutes !== true) {
                     continue;
                 }
-                if (
-                    !$crudEntity->autoConfigurationEditPath
-                    || !$crudEntity->autoConfigurationCreatePath
-                    || !$crudEntity->autoConfigurationListPath
-                ) {
-                    throw new ConfigurationException("When using autoConfigureRoutes feature, is required to set autoConfigurationEditPath, autoConfigurationCreatePath and autoConfigurationListPath");
+                if (!$crudEntity->isAutoConfigurationCompliant()) {
+                    throw new ConfigurationException("When using autoConfigureRoutes feature, is required to set autoConfigurationEditPath, autoConfigurationCreatePath, autoConfigurationListPath and their respective custom route names.");
                 }
                 $listRoute = new Route(
                     path: $crudEntity->autoConfigurationListPath,
@@ -88,6 +84,8 @@ class AutoConfigurationRouteLoader extends Loader
                     ],
                     methods: [Request::METHOD_GET]
                 );
+                $routes->add($crudEntity->customListRoute, $listRoute);
+
                 $createRoute = new Route(
                     path: $crudEntity->autoConfigurationCreatePath,
                     defaults: [
@@ -97,6 +95,8 @@ class AutoConfigurationRouteLoader extends Loader
                     ],
                     methods: [Request::METHOD_GET]
                 );
+                $routes->add($crudEntity->customCreateRoute, $createRoute);
+
                 $editRoute = new Route(
                     path: $crudEntity->autoConfigurationEditPath,
                     defaults: [
@@ -109,22 +109,23 @@ class AutoConfigurationRouteLoader extends Loader
                     ],
                     methods: [Request::METHOD_GET]
                 );
-                $detailsRoute = new Route(
-                    path: $crudEntity->autoConfigurationEditPath,
-                    defaults: [
-                        '_controller' => "Codyas\SkeletonBundle\Controller\CrudController::autoConfiguredDetails",
-                        'fqdn' => $entityClass,
-                        'autoconfigured' => true
-                    ],
-                    requirements: [
-                        'id' => '\d+'
-                    ],
-                    methods: [Request::METHOD_GET]
-                );
-                $routes->add($crudEntity->customListRoute, $listRoute);
-                $routes->add($crudEntity->customCreateRoute, $createRoute);
                 $routes->add($crudEntity->customEditRoute, $editRoute);
-                $routes->add($crudEntity->customDetailsRoute, $detailsRoute);
+
+                if ($crudEntity->customDetailsRoute && $crudEntity->autoConfigurationDetailsPath){
+                    $detailsRoute = new Route(
+                        path: $crudEntity->autoConfigurationDetailsPath,
+                        defaults: [
+                            '_controller' => "Codyas\SkeletonBundle\Controller\CrudController::autoConfiguredDetails",
+                            'fqdn' => $entityClass,
+                            'autoconfigured' => true
+                        ],
+                        requirements: [
+                            'id' => '\d+'
+                        ],
+                        methods: [Request::METHOD_GET]
+                    );
+                    $routes->add($crudEntity->customDetailsRoute, $detailsRoute);
+                }
             }
         }
 

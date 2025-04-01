@@ -231,4 +231,16 @@ class CrudEntity
         return $this->detailsContentTemplate;
     }
 
+    public function isAutoConfigurationCompliant(): bool
+    {
+        return
+            $this->autoConfigurationEditPath
+            && $this->autoConfigurationCreatePath
+            && $this->autoConfigurationListPath
+            && $this->customEditRoute
+            && $this->customCreateRoute
+            && $this->customListRoute
+        ;
+    }
+
 }
