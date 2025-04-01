@@ -35,7 +35,10 @@
     <div class="row">
         {% if entityConfig.filterable %}
             <div class="col-3">
-                {{ form_start(filterForm) }}
+                {{ form_start(filterForm, {attr: {
+                    'data-controller': 'csk-crud-filter',
+                    'data-action': 'reset->csk-crud-filter#reset'
+                }}) }}
                 <div class="card">
                     <div class="card-header">
                         <h3 class="card-title">
@@ -47,12 +50,8 @@
                     </div>
                     <div class="card-footer">
                         <div class="row justify-content-center">
-                            {#                            <div class="col-5"> #}
-                            {#                                <button type="reset" class="btn w-100 btn-secondary "> #}
-                            {#                                    {{ "Clear" | trans }} #}
-                            {#                                </button> #}
-                            {#                            </div> #}
-                            <div class="col-6">
+                            <div class="col-10 d-flex gap-2">
+                                <input class="btn btn-default" type="reset" value="{{ "Clear" | trans({}, 'SkeletonBundle') }}">
                                 <button type="submit" class="btn w-100 btn-primary">
                                     {{ "Apply" | trans({}, 'SkeletonBundle') }}
                                 </button>
