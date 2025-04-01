@@ -21,6 +21,25 @@ export default class extends Controller {
         dialog.show()
     }
 
+    async sortByColumn(evt) {
+        const url = new URL(window.location.href);
+        const params = url.searchParams;
+        const dataset = evt.currentTarget.dataset;
+        let direction = 'desc';
+        switch (dataset.direction) {
+            case "desc":
+                direction = 'asc';
+                break;
+            case "asc":
+                direction = 'desc';
+                break;
+        }
+        evt.currentTarget.dataset.direction = await direction;
+        params.set('orderColumn', dataset.sort);
+        params.set('orderDirection', direction);
+        Turbo.visit(url.toString(), { action: "replace" })
+    }
+
     async deleteRecord(event) {
         if (this.deleteCandidatePayloadValue.url === undefined || !this.deleteCandidatePayloadValue.url) {
             return
@@ -33,7 +52,7 @@ export default class extends Controller {
                 },
                 method: 'DELETE',
                 body: JSON.stringify({
-                    token : this.deleteCandidatePayloadValue.token
+                    token: this.deleteCandidatePayloadValue.token
                 })
             })
             if (!response.ok) {

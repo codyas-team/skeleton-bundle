@@ -151,8 +151,8 @@ class CrudService
 
     private function buildQuery(CrudEntity $entityConfig, Request $request, ?FormInterface $filterForm): Query
     {
-        $orderColumn = $request->query->get('order_column', 'id');
-        $orderDirection = $request->query->get('order_dir', 'desc');
+        $orderColumn = $request->query->get('orderColumn', 'id');
+        $orderDirection = $request->query->get('orderDirection', 'desc');
         $entityRepository = $this->em->getRepository($entityConfig->fqdn);
         if (!$entityConfig->customFetch) {
             return $entityRepository->createQueryBuilder('e')
@@ -166,7 +166,7 @@ class CrudService
         ];
         if ($filterForm) {
             $filterForm->submit($request->get($filterForm->getName()));
-            $filter = $filterForm->getData();
+            $filter = array_merge($filter, $filterForm->getData());
         }
         $filterCollection = new ArrayCollection($filter);
         return $entityRepository->fetch($filterCollection);

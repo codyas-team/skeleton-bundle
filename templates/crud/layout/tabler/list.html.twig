@@ -76,8 +76,12 @@
                                 {% for column in columnsDefinition %}
                                     <th>
                                         {% if column.sort %}
-                                            <button class="table-sort"
-                                                    data-sort="{{ column.propertyKey }}">{{ column.label | trans({"%count%": 1}) }}</button>
+                                            <button class="table-sort {{ column.propertyKey == app.request.get('orderColumn') ? app.request.get('orderDirection')  :  ""}}"
+                                                    data-action="click->csk-crud#sortByColumn"
+                                                    data-direction="{{ app.request.get('orderDirection') }}"
+                                                    data-sort="{{ column.propertyKey }}">
+                                                {{ column.label | trans({"%count%": 1}) }}
+                                            </button>
                                         {% else %}
                                             {{ column.label | trans({"%count%": 1}) }}
                                         {% endif %}
