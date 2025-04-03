@@ -65,8 +65,8 @@ class UserManagerController extends AbstractController
                 $this->em->flush();
                 $this->eventDispatcher->dispatch(new UserPasswordChangedEvent($user));
                 return $this->json([
-                    "title" => $this->translator->trans("Password changed"),
-                    "msg" => $this->translator->trans("The user password was successfully changed."),
+                    "title" => $this->translator->trans("Password changed", domain: "SkeletonBundle"),
+                    "msg" => $this->translator->trans("The user password was successfully changed.", domain: "SkeletonBundle"),
                 ]);
             }
         }
@@ -74,7 +74,7 @@ class UserManagerController extends AbstractController
             'view' => $this->renderView('@Skeleton/crud/users/form_change_password.html.twig', [
                 'form' => $form->createView()
             ]),
-            'title' => $this->translator->trans("Change %identifier%'s password", ["%identifier%" => $user->__toString()])
+            'title' => $this->translator->trans("Change %identifier%'s password", ["%identifier%" => $user->__toString()], domain: "SkeletonBundle")
         ], $request->isMethod(Request::METHOD_POST) ? Response::HTTP_BAD_REQUEST : Response::HTTP_OK);
     }
 

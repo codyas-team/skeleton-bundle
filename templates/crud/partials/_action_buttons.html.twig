@@ -40,7 +40,7 @@
             </button>
         {% endif %}
     {% endfor %}
-    {% if instance.isNomenclator is not defined and {% if csk_is_authorized(constant('Codyas\\SkeletonBundle\\Model\\CrudEntityInterface::DELETE'), entityConfig, instance) %} %}
+    {% if instance.isNomenclator is not defined and csk_is_authorized(constant('Codyas\\SkeletonBundle\\Model\\CrudEntityInterface::DELETE'), entityConfig, instance) %}
         <button class="btn  w-100 btn-icon btn-sm text-red"
                 data-action="csk-crud-table-record#requestDelete"
                 data-toggle="tooltip"
