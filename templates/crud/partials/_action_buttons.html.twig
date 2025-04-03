@@ -1,16 +1,30 @@
 {# @var \Codyas\SkeletonBundle\Model\CrudEntity entityConfig #}
 {% set fqdn = entityConfig.encodedFqdn %}
 <div class="btn-group">
-    <a href="{{ path(entityConfig.editRoute, {
-        'id': instance.id,
-        'fqdn': entityConfig.customEditRoute ? null : fqdn
-    }) }}"
-       class="btn  w-100 btn-icon btn-sm"
-       data-toggle="tooltip"
-       title="{{ "Edit" | trans({}, 'SkeletonBundle') }}"
-       aria-label="{{ "Edit" | trans({}, 'SkeletonBundle') }}">
-        <i class="fa fa-edit"></i>
-    </a>
+    {% if entityConfig.detailsContentTemplate and csk_is_authorized(constant('Codyas\\SkeletonBundle\\Model\\CrudEntityInterface::DETAILS'), entityConfig, instance) %}
+        <a href="{{ path(entityConfig.editRoute, {
+            'id': instance.id,
+            'fqdn': entityConfig.customEditRoute ? null : fqdn
+        }) }}"
+           class="btn  w-100 btn-icon btn-sm"
+           data-toggle="tooltip"
+           title="{{ "Edit" | trans({}, 'SkeletonBundle') }}"
+           aria-label="{{ "Edit" | trans({}, 'SkeletonBundle') }}">
+            <i class="fa fa-edit"></i>
+        </a>
+    {% endif %}
+    {% if csk_is_authorized(constant('Codyas\\SkeletonBundle\\Model\\CrudEntityInterface::EDIT'), entityConfig, instance) %}
+        <a href="{{ path(entityConfig.editRoute, {
+            'id': instance.id,
+            'fqdn': entityConfig.customEditRoute ? null : fqdn
+        }) }}"
+           class="btn  w-100 btn-icon btn-sm"
+           data-toggle="tooltip"
+           title="{{ "Edit" | trans({}, 'SkeletonBundle') }}"
+           aria-label="{{ "Edit" | trans({}, 'SkeletonBundle') }}">
+            <i class="fa fa-edit"></i>
+        </a>
+    {% endif %}
     {# @var \Codyas\SkeletonBundle\Model\DialogDefinition dialog #}
     {% for dialog in entityConfig.dialogs %}
         {% if dialog.actionLauncherDefinition %}
@@ -26,7 +40,7 @@
             </button>
         {% endif %}
     {% endfor %}
-    {% if instance.isNomenclator is not defined %}
+    {% if instance.isNomenclator is not defined and {% if csk_is_authorized(constant('Codyas\\SkeletonBundle\\Model\\CrudEntityInterface::DELETE'), entityConfig, instance) %} %}
         <button class="btn  w-100 btn-icon btn-sm text-red"
                 data-action="csk-crud-table-record#requestDelete"
                 data-toggle="tooltip"

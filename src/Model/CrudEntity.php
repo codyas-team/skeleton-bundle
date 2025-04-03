@@ -32,6 +32,7 @@ class CrudEntity
         public ?string         $customListTemplate = null,
         public ?string         $customDetailsTemplate = null,
         public ?string         $detailsContentTemplate = "",
+        public ?string         $detailsButtonsTemplate = "",
         public ?string         $customCreateTemplate = null,
         public ?string         $customEditTemplate = null,
         public ?bool           $displayRowNumber = true,

@@ -10,15 +10,19 @@
 {% block page_subtitle %}{% endblock %}
 
 {% block page_actions %}
-    {% if csk_is_authorized(constant('Codyas\\SkeletonBundle\\Model\\CrudEntityInterface::EDIT'), entityConfig, instance) %}
-        <div class="btn-list">
+    <div class="btn-list">
+        {% if entityConfig.detailsButtonsTemplate %}
+            {% include entityConfig.detailsButtonsTemplate %}
+        {% endif %}
+        {% if csk_is_authorized(constant('Codyas\\SkeletonBundle\\Model\\CrudEntityInterface::EDIT'), entityConfig, instance) %}
             <a href="{{ path(entityConfig.editRoute, {'id': instance.id, 'fqdn': entityConfig.customEditRoute ? null : fqdn}) }}"
                class="btn btn-primary d-none d-sm-inline-block">
                 <i class="fas fa-edit"></i>
                 {{ "Edit" | trans({}, 'SkeletonBundle') }}
             </a>
-        </div>
-    {% endif %}
+        {% endif %}
+    </div>
+
 {% endblock %}
 
 {% block page_content %}

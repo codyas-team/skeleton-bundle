@@ -51,7 +51,7 @@
                     <div class="card-footer">
                         <div class="row justify-content-center">
                             <div class="col-10 d-flex gap-2">
-                                <input class="btn btn-default" type="reset" value="{{ "Clear" | trans({}, 'SkeletonBundle') }}">
+                                <a class="btn btn-default" href="{{ path(entityConfig.listRoute) }}">{{ "Clear" | trans({}, 'SkeletonBundle') }}</a>
                                 <button type="submit" class="btn w-100 btn-primary">
                                     {{ "Apply" | trans({}, 'SkeletonBundle') }}
                                 </button>
