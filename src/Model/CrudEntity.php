@@ -55,6 +55,7 @@ class CrudEntity
             CrudEntityInterface::EDIT => 'ROLE_ADMIN',
             CrudEntityInterface::DELETE => 'ROLE_ADMIN'
         ]),
+        public ?array          $exportConfiguration = null
     )
     {
     }
@@ -248,8 +249,22 @@ class CrudEntity
             && $this->autoConfigurationListPath
             && $this->customEditRoute
             && $this->customCreateRoute
-            && $this->customListRoute
-        ;
+            && $this->customListRoute;
     }
 
+    public function isExportable(): bool
+    {
+        return $this->exportConfiguration !== null;
+    }
+
+    public function getExportConfigurationForFormat(string $format): ?EntityExportDefinition
+    {
+        /** @var EntityExportDefinition $exportConfiguration */
+        foreach ($this->exportConfiguration as $exportConfiguration) {
+            if ($exportConfiguration->format === $format){
+                return $exportConfiguration;
+            }
+        }
+        return null;
+    }
 }

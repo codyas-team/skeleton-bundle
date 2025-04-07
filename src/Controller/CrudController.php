@@ -2,6 +2,7 @@
 
 namespace Codyas\SkeletonBundle\Controller;
 
+use Codyas\SkeletonBundle\Exception\ConfigurationException;
 use Codyas\SkeletonBundle\Exception\InvalidFormException;
 use Codyas\SkeletonBundle\Helper\Constants;
 use Codyas\SkeletonBundle\Model\CrudEntity;
@@ -15,10 +16,12 @@ use Doctrine\ORM\Query;
 use Knp\Component\Pager\Pagination\PaginationInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\DependencyInjection\Attribute\AutowireIterator;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
@@ -70,6 +73,34 @@ class CrudController extends AbstractController
             "recordsFiltered" => $pagination->getTotalItemCount(),
             "recordsTotal" => $pagination->getTotalItemCount()
         ]);
+    }
+
+    #[Route('/export/{format}', name: "csk_crud_export", methods: [Request::METHOD_GET])]
+    public function export(
+        string                                                                               $format,
+        Request                                                                              $request,
+        #[AutowireIterator(CrudEntityInterface::EXPORT_IMPLEMENTATION_SERVICE_TAG)] iterable $exportImplementations
+    ): Response
+    {
+        $this->denyAccessUnlessGranted(CrudEntityInterface::LIST, new VoterArgument($this->entityConfiguration));
+        if (!($exportConfiguration = $this->entityConfiguration->getExportConfigurationForFormat($format))) {
+            throw new NotFoundHttpException("Entity {$this->entityConfiguration->label} does not supports data export in the given format.");
+        }
+        $filterForm = $this->crudService->getFilterFormInstance($this->entityConfiguration, []);
+        $pagination = $this->crudService->buildPagination($this->entityConfiguration, $filterForm);
+        $implementation = null;
+        foreach ($exportImplementations as $exportImplementation) {
+            if (get_class($exportImplementation) === $exportConfiguration->implementationClass){
+                $implementation = $exportImplementation;
+            }
+        }
+        if (!$implementation){
+            throw new ConfigurationException("Implementation service {$exportConfiguration->implementationClass} does not exist or not tagged.");
+        }
+        return call_user_func(
+            [$implementation, $exportConfiguration->callbackMethod],
+            $pagination
+        );
     }
 
     #[Route('/create', name: "csk_crud_create", methods: [Request::METHOD_GET, Request::METHOD_POST])]
@@ -162,7 +193,9 @@ class CrudController extends AbstractController
         if ($filterFormType) {
             $filterForm = $this->createForm($filterFormType, []);
             $filterForm->submit($request->get($filterForm->getName()));
-            $filter = $filterForm->getData();
+            $filter = array_merge($filter, $filterForm->getData());
+            dump($filterForm->getData());
+            exit;
         }
         $filterCollection = new ArrayCollection($filter);
         return $entityRepository->fetch($filterCollection);

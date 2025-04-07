@@ -13,14 +13,32 @@
     {% include '@Skeleton/crud/layout/tabler/_breadcrumbs.html.twig' %}
 {% endblock %}
 
-
 {% block page_actions %}
     <div class="btn-list">
-        <a href="{{ path(entityConfig.createRoute, {'fqdn': entityConfig.customCreateRoute ? null : fqdn}) }}"
-           class="btn btn-primary d-none d-sm-inline-block">
-            <i class="fa fa-plus"></i>
-            {{ entityConfig.createTranslatableLabel | trans({"%count%":1}) }}
-        </a>
+        {% if entityConfig.isExportable %}
+            <div class="dropdown">
+                <button class="btn dropdown-toggle align-text-top" data-bs-toggle="dropdown">{{ "Export" | trans({}, 'SkeletonBundle') }}</button>
+                <div class="dropdown-menu dropdown-menu-end">
+                    {% for exportDefinition in entityConfig.exportConfiguration %}
+                        <a href="{{ path('csk_crud_export', {'fqdn': fqdn, 'format': exportDefinition.format}) }}?{{ app.request.queryString }}"
+                           class="dropdown-item"
+                           target="_blank"
+                        >
+                            <i class="{{ exportDefinition.icon }} me-1"></i>
+                            {{ exportDefinition.label | trans({"%count%":1}) }}
+                        </a>
+                    {% endfor %}
+                </div>
+            </div>
+
+        {% endif %}
+        {% if csk_is_authorized(constant('Codyas\\SkeletonBundle\\Model\\CrudEntityInterface::CREATE'), entityConfig) %}
+            <a href="{{ path(entityConfig.createRoute, {'fqdn': entityConfig.customCreateRoute ? null : fqdn}) }}"
+               class="btn btn-primary d-none d-sm-inline-block">
+                <i class="fa fa-plus"></i>
+                {{ entityConfig.createTranslatableLabel | trans({"%count%":1}) }}
+            </a>
+        {% endif %}
     </div>
 {% endblock %}
 

@@ -88,3 +88,81 @@ The `App\Security\EmailAuthenticator` class is automatically created when instal
 to your needs or create a custom authenticator and modify the security configuration.
 
 ## Templating
+The default template is [Tabler](https://github.com/tabler/tabler) and integrated with
+[TablerBundler](https://github.com/kevinpapst/TablerBundle), so when installing this bundle you should also adjust the 
+`config/packages/tabler.yaml` file.
+
+## Automated operations configuration
+This bundle supports automated read and write operations via the CRUD manager. To allow the handler to operate entities 
+in your application, you must ensure that you meet the following requirements:
+
+### Required configuration
+
+* Your entity must implement the \Codyas\SkeletonBundle\Model\CrudEntityInterface and its methods:
+    * `getId(): ?int`: Return the entity's identifier.
+    * `renderDataTableRow(\Codyas\SkeletonBundle\Model\RowRendererArguments $arguments): array`: This method must return an array, where each position relates with your entity columns.
+    * `__toString(): string`: An string representation of the entity.
+
+### Export entities data
+If it is necessary to export the data from the table, it is possible to configure the entity for this purpose, although 
+it will always be necessary to implement the method that generates the file. To activate this behavior you must follow 
+the following steps:
+* Configure the `exportConfiguration` key in the entity configuration attribute. This configuration parameter expects an 
+array of `\Codyas\SkeletonBundle\Model\EntityExportDefinition` where each element represents a format in which the information is exported.
+You also need to specify the both the implementation class and method that will generate the report:
+    ```php
+    #[CrudEntity(
+        # (..)
+        exportConfiguration: [
+            new EntityExportDefinition(
+                format: 'csv',
+                label: 'CSV',
+                icon: 'fas fa-file-csv',
+                # Specify here the class that implements your report generation.
+                implementationClass: ReportsGeneratorService::class,
+                # Specify the class method that implements your report generation.
+                callbackMethod: 'generateCSV'
+            )
+    ]
+)]```
+* Your **implementation class** must be tagged with csk_export_implementation to be discovered by the skeleton. In the 
+following working example, you can see an implementation of a CSV export. The method receives the applied filters and 
+current pagination as parameter. You can choose to generate the output for the current page or iterate over all pages for
+a complete data dump.
+```php
+<?php
+
+namespace App\Services;
+
+use App\Entity\User;
+use Codyas\SkeletonBundle\Model\CrudEntityInterface;
+use Knp\Component\Pager\Pagination\PaginationInterface;
+use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\StreamedResponse;
+
+#[AutoconfigureTag(name: CrudEntityInterface::EXPORT_IMPLEMENTATION_SERVICE_TAG)]
+class ReportsGeneratorService
+{
+    public function generateCSV(PaginationInterface $pagination) : Response
+    {
+        $handle = fopen('php://temp', 'r+');
+        /** @var User $user */
+        foreach ($pagination->getItems() as $user) {
+            fputcsv($handle, $user->toArray());
+        }
+        rewind($handle);
+        $csvContent = stream_get_contents($handle);
+        fclose($handle);
+        $fileName = strtoupper(uniqid());
+        return new Response(
+            $csvContent,
+            200,
+            [
+                'Content-Type' => 'text/csv',
+                'Content-Disposition' => "attachment; filename=\"{$fileName}.csv\"",
+            ]
+        );
+    }
+}
+```

@@ -29,3 +29,4 @@ Clear: 'Limpiar'
 Change %identifier%'s password:  "Cambiar contraseña de %identifier%"
 Password changed: "Contraseña cambiada"
 The user password was successfully changed.: "La contraseña del usuario fue cambiada exitosamente"
+Export: 'Exportar'

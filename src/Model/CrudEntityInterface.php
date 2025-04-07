@@ -17,6 +17,8 @@ interface CrudEntityInterface
 
     const string DELETE = 'delete';
 
+    const string EXPORT_IMPLEMENTATION_SERVICE_TAG = "csk_export_implementation";
+
     public function getId(): ?int;
 
     public function renderDataTableRow(RowRendererArguments $arguments): array;

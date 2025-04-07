@@ -53,7 +53,7 @@ final class RuntimeExtension implements RuntimeExtensionInterface
         return $breadcrumbs;
     }
 
-    public function isAuthorized(string $attribute, CrudEntity $entityConfig, CrudEntityInterface $instance): bool
+    public function isAuthorized(string $attribute, CrudEntity $entityConfig, ?CrudEntityInterface $instance = null): bool
     {
         return $this->crudService->isAuthorized($attribute, $entityConfig, $instance);
     }

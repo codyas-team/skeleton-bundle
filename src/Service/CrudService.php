@@ -67,26 +67,7 @@ class CrudService
         if (!$this->authorizationChecker->isGranted(CrudEntityInterface::LIST, new VoterArgument($entityConfig))) {
             throw new AccessDeniedException();
         }
-        $request = $this->requestStack->getCurrentRequest();
-        $queryParams = $request->query->all();
-        $filterData['pageSize'] = $request->query->get('pageSize', 10);
-        $filterData['page'] = $request->query->get('page', 1);
-        $encodedFqdn = $entityConfig->getEncodedFqdn();
-        if (array_key_exists($encodedFqdn, $queryParams) && $queryParams[$encodedFqdn]) {
-            $filterData = array_merge($queryParams[$encodedFqdn], $filterData);
-        }
-        $filterForm = null;
-        if ($entityConfig->isFilterable()) {
-            $filterForm = $this->formFactory->createNamed(
-                $entityConfig->getFlattenedFqdn(),
-                $entityConfig->filterType,
-                $filterData,
-                array_merge(
-                    $entityConfig->filterTypeOptions, [
-                    'method' => Request::METHOD_GET,
-                    'csrf_protection' => false
-                ]));
-        }
+        $filterForm = $this->getFilterFormInstance($entityConfig, $filterData);
         $pagination = $this->buildPagination($entityConfig, $filterForm);
         return [$entityConfig->getListTemplate(), [
             'entityConfig' => $entityConfig,
@@ -294,5 +275,30 @@ class CrudService
         if (!$this->isAuthorized($attribute, $entityConfig, $instance)) {
             throw new AccessDeniedHttpException();
         }
+    }
+
+    public function getFilterFormInstance(CrudEntity $entityConfig, ?array $filterData): ?FormInterface
+    {
+        $request = $this->requestStack->getCurrentRequest();
+        $queryParams = $request->query->all();
+        $filterData['pageSize'] = $request->query->get('pageSize', 10);
+        $filterData['page'] = $request->query->get('page', 1);
+        $encodedFqdn = $entityConfig->getEncodedFqdn();
+        if (array_key_exists($encodedFqdn, $queryParams) && $queryParams[$encodedFqdn]) {
+            $filterData = array_merge($queryParams[$encodedFqdn], $filterData);
+        }
+        $filterForm = null;
+        if ($entityConfig->isFilterable()) {
+            $filterForm = $this->formFactory->createNamed(
+                $entityConfig->getFlattenedFqdn(),
+                $entityConfig->filterType,
+                $filterData,
+                array_merge(
+                    $entityConfig->filterTypeOptions, [
+                    'method' => Request::METHOD_GET,
+                    'csrf_protection' => false
+                ]));
+        }
+        return $filterForm;
     }
 }
