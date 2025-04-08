@@ -127,10 +127,10 @@ class CrudService
         $request = $this->requestStack->getCurrentRequest();
         $formData = $filterForm->getData();
         $query = $this->buildQuery($entityConfig, $request, $filterForm);
-        return $this->paginator->paginate($query, $formData['page'], $formData['pageSize']);
+        return $this->paginator->paginate($query, $formData['page'], $entityConfig->listPageSize);
     }
 
-    private function buildQuery(CrudEntity $entityConfig, Request $request, ?FormInterface $filterForm): Query
+    public function buildQuery(CrudEntity $entityConfig, Request $request, ?FormInterface $filterForm): Query
     {
         $orderColumn = $request->query->get('orderColumn', 'id');
         $orderDirection = $request->query->get('orderDirection', 'desc');

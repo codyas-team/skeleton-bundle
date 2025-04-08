@@ -23,6 +23,7 @@ class CrudEntity
         public ?string         $formTemplate = '@Skeleton/crud/partials/_form.html.twig',
         public ?string         $filterType = null,
         public ?array          $filterTypeOptions = [],
+        public ?int            $listPageSize = 15,
         public ?string         $filterTemplate = '@Skeleton/crud/partials/_form_filter.html.twig',
         public ?string         $actionButtonsTemplate = '@Skeleton/crud/partials/_action_buttons.html.twig',
         public ?string         $actionButtonsColumnWidth = '10%',
@@ -261,7 +262,7 @@ class CrudEntity
     {
         /** @var EntityExportDefinition $exportConfiguration */
         foreach ($this->exportConfiguration as $exportConfiguration) {
-            if ($exportConfiguration->format === $format){
+            if ($exportConfiguration->format === $format) {
                 return $exportConfiguration;
             }
         }

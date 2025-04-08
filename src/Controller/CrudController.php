@@ -84,22 +84,14 @@ class CrudController extends AbstractController
     {
         $this->denyAccessUnlessGranted(CrudEntityInterface::LIST, new VoterArgument($this->entityConfiguration));
         if (!($exportConfiguration = $this->entityConfiguration->getExportConfigurationForFormat($format))) {
-            throw new NotFoundHttpException("Entity {$this->entityConfiguration->label} does not supports data export in the given format.");
+            throw $this->createNotFoundException("Entity {$this->entityConfiguration->label} does not supports data export in the given format.");
         }
         $filterForm = $this->crudService->getFilterFormInstance($this->entityConfiguration, []);
-        $pagination = $this->crudService->buildPagination($this->entityConfiguration, $filterForm);
-        $implementation = null;
-        foreach ($exportImplementations as $exportImplementation) {
-            if (get_class($exportImplementation) === $exportConfiguration->implementationClass){
-                $implementation = $exportImplementation;
-            }
-        }
-        if (!$implementation){
-            throw new ConfigurationException("Implementation service {$exportConfiguration->implementationClass} does not exist or not tagged.");
-        }
+        $query = $this->crudService->buildQuery($this->entityConfiguration, $request,$filterForm);
+        $implementation = $this->getExportImplementation($exportImplementations, $exportConfiguration);
         return call_user_func(
             [$implementation, $exportConfiguration->callbackMethod],
-            $pagination
+            $query, $request
         );
     }
 
@@ -285,5 +277,24 @@ class CrudController extends AbstractController
         } catch (InvalidFormException $invalidFormException) {
             return $this->handleInvalidFormException($request, $invalidFormException);
         }
+    }
+
+    /**
+     * @param iterable $exportImplementations
+     * @param \Codyas\SkeletonBundle\Model\EntityExportDefinition $exportConfiguration
+     * @return mixed
+     */
+    public function getExportImplementation(iterable $exportImplementations, \Codyas\SkeletonBundle\Model\EntityExportDefinition $exportConfiguration): mixed
+    {
+        $implementation = null;
+        foreach ($exportImplementations as $exportImplementation) {
+            if (get_class($exportImplementation) === $exportConfiguration->implementationClass) {
+                $implementation = $exportImplementation;
+            }
+        }
+        if (!$implementation) {
+            throw new ConfigurationException("Implementation service {$exportConfiguration->implementationClass} does not exist or not tagged.");
+        }
+        return $implementation;
     }
 }

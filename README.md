@@ -124,11 +124,12 @@ You also need to specify the both the implementation class and method that will 
                 callbackMethod: 'generateCSV'
             )
     ]
-)]```
+    )]
+  ```
 * Your **implementation class** must be tagged with csk_export_implementation to be discovered by the skeleton. In the 
-following working example, you can see an implementation of a CSV export. The method receives the applied filters and 
-current pagination as parameter. You can choose to generate the output for the current page or iterate over all pages for
-a complete data dump.
+following working example, you can see an implementation of a CSV export. The method receives the query ready to be executed,
+as well as the current request. You can choose to generate the output for the current page or iterate over all pages for
+a complete data dump (as shown in the example).
 ```php
 <?php
 
@@ -136,20 +137,31 @@ namespace App\Services;
 
 use App\Entity\User;
 use Codyas\SkeletonBundle\Model\CrudEntityInterface;
-use Knp\Component\Pager\Pagination\PaginationInterface;
+use Doctrine\ORM\Query;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\StreamedResponse;
 
 #[AutoconfigureTag(name: CrudEntityInterface::EXPORT_IMPLEMENTATION_SERVICE_TAG)]
-class ReportsGeneratorService
+readonly class ReportsGeneratorService
 {
-    public function generateCSV(PaginationInterface $pagination) : Response
+    public function __construct(private readonly PaginatorInterface $paginator)
+    {
+    }
+
+    public function generateUsersCSV(Query $query, Request $request): Response
     {
         $handle = fopen('php://temp', 'r+');
-        /** @var User $user */
-        foreach ($pagination->getItems() as $user) {
-            fputcsv($handle, $user->toArray());
+        $page = 1;
+        $pagination = $this->paginator->paginate($query, $page, 25);
+        while ($pagination->getItems()) {
+            /** @var User $user */
+            foreach ($pagination->getItems() as $user) {
+                fputcsv($handle, $user->toArray());
+            }
+            $page++;
+            $pagination = $this->paginator->paginate($query, $page, 25);
         }
         rewind($handle);
         $csvContent = stream_get_contents($handle);
