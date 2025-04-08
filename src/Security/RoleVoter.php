@@ -18,16 +18,6 @@ class RoleVoter extends Voter
 
     protected function supports(string $attribute, mixed $subject): bool
     {
-        if (!in_array($attribute, [
-            CrudEntityInterface::VIEW,
-            CrudEntityInterface::LIST,
-            CrudEntityInterface::DETAILS,
-            CrudEntityInterface::CREATE,
-            CrudEntityInterface::EDIT,
-            CrudEntityInterface::DELETE
-        ])) {
-            return false;
-        }
         if (!$subject instanceof VoterArgument) {
             return false;
         }

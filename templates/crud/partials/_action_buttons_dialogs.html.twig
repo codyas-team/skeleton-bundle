@@ -1,0 +1,15 @@
+{# @var \Codyas\SkeletonBundle\Model\DialogDefinition dialog #}
+{% for dialog in entityConfig.dialogs %}
+    {% if dialog.actionLauncherDefinition and csk_is_authorized(dialog.id, entityConfig, instance) %}
+        <button
+            data-toggle="tooltip"
+            data-action="csk-crud-table-record#requestDialog"
+            data-dialog-id="{{ dialog.id }}"
+            data-load-url="{{ path(dialog.loadUrl, {'id': instance.id}) }}"
+            title="{{ dialog.actionLauncherDefinition.title | trans }}"
+            aria-label="{{ dialog.actionLauncherDefinition.title | trans }}"
+            class="btn  w-100 btn-icon btn-sm {{ dialog.actionLauncherDefinition.cssClass }}">
+            <i class="{{ dialog.actionLauncherDefinition.icon }}"></i>
+        </button>
+    {% endif %}
+{% endfor %}

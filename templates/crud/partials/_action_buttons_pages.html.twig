@@ -1,0 +1,13 @@
+{# @var \Codyas\SkeletonBundle\Model\DialogDefinition dialog #}
+{% for page in entityConfig.pages %}
+    <button
+        data-toggle="tooltip"
+        data-dialog-id="{{ page.id }}"
+        data-load-url="{{ path(page.path, {'id': instance.id}) }}"
+{#        title="{{ dialog.actionLauncherDefinition.title | trans }}"#}
+{#        aria-label="{{ dialog.actionLauncherDefinition.title | trans }}"#}
+{#        class="btn  w-100 btn-icon btn-sm {{ dialog.actionLauncherDefinition.cssClass }}"#}
+    >
+        <i class="{{ dialog.actionLauncherDefinition.icon }}"></i>
+    </button>
+{% endfor %}
