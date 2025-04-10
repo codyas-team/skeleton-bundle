@@ -1,5 +1,5 @@
 import {Controller} from '@hotwired/stimulus';
-import {Block, Loading, Notify} from "notiflix";
+import {Loading, Notify} from "notiflix";
 import {ValidationError} from "../common/ValidationError";
 import hyperform from "hyperform";
 
@@ -13,6 +13,7 @@ export default class extends Controller {
         loadUrl: String,
         id: String,
         genericErrorMsg: String,
+        preSubmitEvent: String,
     }
 
     connect() {
@@ -29,7 +30,7 @@ export default class extends Controller {
         this.loadDialog(event.detail.loadUrl)
     }
 
-    formTargetConnected(element){
+    formTargetConnected(element) {
         this.formValidator = hyperform(element, {
             classes: {
                 invalid: 'is-invalid',
@@ -42,6 +43,7 @@ export default class extends Controller {
         Loading.pulse()
         const response = await fetch(loadUrl)
         if (!response.ok) {
+            Loading.remove()
             Notify.failure(this.genericErrorMsgValue)
             return
         }
@@ -58,35 +60,41 @@ export default class extends Controller {
         if (this.formTarget.length === 0) {
             return
         }
+        const validationState = {valid: true}
+        await this.dispatch("before_submit", {
+            target: this.formTarget,
+            detail: validationState
+        })
         event.preventDefault()
-        if (!this.formTarget.reportValidity()) {
+        if (!validationState.valid || !this.formTarget.reportValidity()) {
             return
         }
         Loading.standard()
         const headers = new Headers()
         headers.append("Accept", "application/json")
-        try{
+        try {
             const response = await fetch(this.formTarget.getAttribute('action'), {
                 method: 'POST',
                 body: new FormData(this.formTarget),
                 headers: headers
             })
-            if (!response.ok){
+            if (!response.ok) {
                 const errorResponse = response.status === 400 ? await response.json() : null
                 let message = errorResponse.msg !== undefined ? errorResponse.msg : this.genericErrorMsgValue;
                 throw new ValidationError(message, null, errorResponse.view);
             }
             const json = await response.json()
             Notify.success(json.msg)
+            Turbo.visit(window.location.href, {action: "replace"});
             this.dialog.hide()
-        } catch(error){
-            if (error instanceof ValidationError){
+        } catch (error) {
+            if (error instanceof ValidationError) {
                 Notify.warning(error.message)
                 this.dialogBodyTarget.innerHTML = error.parameters
                 return
             }
             Notify.failure(this.genericErrorMsgValue)
-        }finally {
+        } finally {
             Loading.remove()
         }
     }
