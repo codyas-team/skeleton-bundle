@@ -84,7 +84,9 @@ export default class extends Controller {
                 throw new ValidationError(message, null, errorResponse.view);
             }
             const json = await response.json()
-            Notify.success(json.msg)
+            if (json.msg !== undefined){
+                Notify.success(json.msg)
+            }
             Turbo.visit(window.location.href, {action: "replace"});
             this.dialog.hide()
         } catch (error) {
