@@ -5,6 +5,8 @@
     {% include '@Skeleton/crud/layout/tabler/_breadcrumbs_form.html.twig' %}
 {% endblock %}
 
+{% block title %}{{ pageTitle }} | {{ csk_option('templating.name') }}{% endblock %}
+
 {% block page_title %}{{ pageTitle }}{% endblock %}
 
 {% block page_subtitle %}{% endblock %}
@@ -13,8 +15,8 @@
 
 {% block page_content %}
     <div
-         data-controller="csk-crud-form"
-         data-csk-crud-form-generic-error-msg-value="{{ "There was an error processing your request. Please try again later or contact technical support." | trans }}"
+        data-controller="csk-crud-form"
+        data-csk-crud-form-generic-error-msg-value="{{ "There was an error processing your request. Please try again later or contact technical support." | trans }}"
     >
         <div data-csk-crud-form-target="formContainer">
             {% include entityConfig.formTemplate %}
