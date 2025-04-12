@@ -1,7 +1,8 @@
 {# @var \Codyas\SkeletonBundle\Model\CrudEntity entityConfig #}
 {% extends entityConfig.baseLayout %}
 {% set fqdn = entityConfig.encodedFqdn %}
-{% block page_title %}{{ entityConfig.headerTranslatableLabel | trans({"%count%":2}) }} | {{ csk_option('templating.name') }}{% endblock %}
+{% block title %}{{ entityConfig.headerTranslatableLabel | trans({"%count%":2}) }} | {{ csk_option('templating.name') }}{% endblock %}
+{% block page_title %}{{ entityConfig.headerTranslatableLabel | trans({"%count%":2}) }}{% endblock %}
 
 {% block page_subtitle %}
     <div class="text-body-secondary mt-1">
