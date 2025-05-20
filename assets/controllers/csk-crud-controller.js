@@ -3,11 +3,12 @@ import {Loading, Notify} from "notiflix";
 import {ValidationError} from "../common/ValidationError";
 
 export default class extends Controller {
-
+    deleteDialog = null;
     static targets = ['deleteDialog']
     static values = {
         deleteCandidatePayload: Object,
-        genericDeleteMsg: String
+        genericDeleteMsg: String,
+        crudMode: String,
     }
 
     connect() {
@@ -15,10 +16,10 @@ export default class extends Controller {
 
     showDeleteDialog({detail}) {
         this.deleteCandidatePayloadValue = detail
-        const dialog = new bootstrap.Modal(this.deleteDialogTarget, {
+        this.deleteDialog = new bootstrap.Modal(this.deleteDialogTarget, {
             backdrop: 'static'
         })
-        dialog.show()
+        this.deleteDialog.show()
     }
 
     async sortByColumn(evt) {
@@ -61,6 +62,14 @@ export default class extends Controller {
                 throw new ValidationError(message, null, errorResponse.form)
             }
             const json = await response.json()
+            if (json.msg !== undefined){
+                Notify.success(json.msg)
+            }
+            if (json.triggerEvent !== undefined && json.triggerEvent === true){
+                this.dispatch('record_deleted');
+                this.deleteDialog.hide();
+                return;
+            }
             Turbo.visit(window.location.href)
         } catch (error) {
             console.error(error)

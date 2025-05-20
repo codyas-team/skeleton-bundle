@@ -72,7 +72,7 @@ class AutoConfigurationRouteLoader extends Loader
                 if ($crudEntity->autoConfigureRoutes !== true) {
                     continue;
                 }
-                if (!$crudEntity->isAutoConfigurationCompliant()) {
+                if (!$crudEntity->isAutoConfigurationCompliant() && $crudEntity->crudMode === CrudEntityInterface::CRUD_MODE_NON_SPA) {
                     throw new ConfigurationException("When using autoConfigureRoutes feature, is required to set autoConfigurationEditPath, autoConfigurationCreatePath, autoConfigurationListPath and their respective custom route names.");
                 }
                 $listRoute = new Route(

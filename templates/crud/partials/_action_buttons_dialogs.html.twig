@@ -1,6 +1,6 @@
 {# @var \Codyas\SkeletonBundle\Model\DialogDefinition dialog #}
 {% for dialog in entityConfig.dialogs %}
-    {% if dialog.actionLauncherDefinition and csk_is_authorized(dialog.id, entityConfig, instance) %}
+    {% if dialog.actionLauncherDefinition and csk_is_authorized(dialog.id, entityConfig, instance) and dialog.asActionButton == true %}
         <button
             data-toggle="tooltip"
             data-action="csk-crud-table-record#requestDialog"

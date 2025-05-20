@@ -125,11 +125,20 @@ class CrudController extends AbstractController
             throw new BadRequestHttpException();
         }
         $instance = $this->crudService->retrieveInstance($this->entityConfiguration->fqdn, $id);
+        if (!$instance) {
+            throw new NotFoundHttpException();
+        }
         $this->denyAccessUnlessGranted(CrudEntityInterface::DELETE, new VoterArgument(
                 $this->entityConfiguration,
                 $instance)
         );
         $this->crudService->removeInstance($instance);
+        if ($this->entityConfiguration->crudMode === CrudEntityInterface::CRUD_MODE_SPA) {
+            return $this->json([
+                'triggerEvent' => true,
+                'msg' => $this->translator->trans("The item was successfully deleted.", domain: "SkeletonBundle"),
+            ]);
+        }
         $this->createFlashNonBlockingAlert([
             'type' => Constants::TYPE_SUCCESS,
             'title' => $this->translator->trans("Done!", domain: "SkeletonBundle"),
@@ -140,17 +149,37 @@ class CrudController extends AbstractController
 
     public function autoConfiguredList(Request $request): Response
     {
-        return $this->render(...$this->crudService->renderListFromFqdn($this->entityConfiguration->fqdn));
+        if ($this->entityConfiguration->crudMode === CrudEntityInterface::CRUD_MODE_SPA) {
+            return $this->json($this->crudService->renderJsonListResponseFromEntityConfig($this->entityConfiguration, [
+                'scope' => $request->get('id'),
+            ]));
+        }
+        return $this->render(...$this->crudService->renderListFromEntityConfig($this->entityConfiguration));
     }
 
     public function autoConfiguredCreate(Request $request): Response
     {
-        return $this->render(...$this->crudService->renderForm(instance: new $this->entityConfiguration->fqdn));
+        $renderForm = $this->crudService->renderForm(instance: new $this->entityConfiguration->fqdn);
+        if ($this->entityConfiguration->crudMode === CrudEntityInterface::CRUD_MODE_SPA) {
+            return $this->json([
+                'view' => $this->renderView($this->entityConfiguration->formTemplate, $renderForm[1]),
+            ]);
+        }
+        return $this->render(...$renderForm);
     }
 
     public function autoConfiguredEdit(int $id, Request $request): Response
     {
         $instance = $this->em->getRepository($this->entityConfiguration->fqdn)->find($id);
+        if (!$instance) {
+            throw new NotFoundHttpException();
+        }
+        $renderForm = $this->crudService->renderForm(instance: $instance);
+        if ($this->entityConfiguration->crudMode === CrudEntityInterface::CRUD_MODE_SPA) {
+            return $this->json([
+                'view' => $this->renderView($this->entityConfiguration->formTemplate, $renderForm[1]),
+            ]);
+        }
         return $this->render(...$this->crudService->renderForm(instance: $instance));
     }
 
@@ -186,8 +215,6 @@ class CrudController extends AbstractController
             $filterForm = $this->createForm($filterFormType, []);
             $filterForm->submit($request->get($filterForm->getName()));
             $filter = array_merge($filter, $filterForm->getData());
-            dump($filterForm->getData());
-            exit;
         }
         $filterCollection = new ArrayCollection($filter);
         return $entityRepository->fetch($filterCollection);
@@ -224,12 +251,19 @@ class CrudController extends AbstractController
 
     private function handleFormResponse(Request $request, CrudEntityInterface $instance): Response
     {
-        return match ($this->acceptsJsonResponse($request)) {
-            true => $this->json([
+        if ($this->acceptsJsonResponse($request)) {
+            return $this->json([
+                'triggerEvent' => true,
+                'msg' => $this->translator->trans("The changes to the record were successfully saved.", domain: "SkeletonBundle"),
                 'instanceUrl' => $this->crudService->generateInstanceEditUrl($instance, $this->entityConfiguration)
-            ]),
-            default => $this->render(...$this->crudService->renderForm($this->entityConfiguration, $instance))
-        };
+            ]);
+        }
+        $this->createFlashNonBlockingAlert([
+            'type' => Constants::TYPE_SUCCESS,
+            'title' => $this->translator->trans("Done!", domain: "SkeletonBundle"),
+            'msg' => $this->translator->trans("The changes to the record were successfully saved.", domain: "SkeletonBundle"),
+        ]);
+        return $this->render(...$this->crudService->renderForm($this->entityConfiguration, $instance));
     }
 
     public function acceptsJsonResponse(Request $request): bool
@@ -267,11 +301,6 @@ class CrudController extends AbstractController
         try {
             if ($request->isMethod(Request::METHOD_POST)) {
                 $this->crudService->handleFormSubmission($instance, $this->entityConfiguration, $request);
-                $this->createFlashNonBlockingAlert([
-                    'type' => Constants::TYPE_SUCCESS,
-                    'title' => $this->translator->trans("Done!", domain: "SkeletonBundle"),
-                    'msg' => $this->translator->trans("The changes to the record were successfully saved.", domain: "SkeletonBundle"),
-                ]);
             }
             return $this->handleFormResponse($request, $instance);
         } catch (InvalidFormException $invalidFormException) {

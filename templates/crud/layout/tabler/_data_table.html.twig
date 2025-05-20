@@ -1,0 +1,60 @@
+{% if items|length > 0 %}
+    <table class="table {{ entityConfig.dataTableClass }}"
+           data-controller="csk-crud-table"
+           data-csk-crud-table-load-url-value="{{ path('csk_crud_fetch', {'fqdn' : entityConfig.encodedFqdn}) }}">
+        <thead>
+        {% set columnsDefinition = entityConfig.dataTableColumnDefinition %}
+        <tr>
+            {% for column in columnsDefinition %}
+                <th>
+                    {% if column.sort %}
+                        <button class="table-sort {{ column.propertyKey == app.request.get('orderColumn') ? app.request.get('orderDirection')  :  ""}}"
+                                data-action="click->csk-crud#sortByColumn"
+                                data-direction="{{ app.request.get('orderDirection') }}"
+                                data-sort="{{ column.propertyKey }}">
+                            {{ column.label | trans({"%count%": 1}) }}
+                        </button>
+                    {% else %}
+                        {{ column.label | trans({"%count%": 1}) }}
+                    {% endif %}
+                </th>
+            {% endfor %}
+        </tr>
+        </thead>
+        <colgroup>
+            {# @var \Codyas\SkeletonBundle\Model\ColumnDefinition column #}
+            {% for column in columnsDefinition %}
+                <col style="width: {{ column.width }};">
+            {% endfor %}
+        </colgroup>
+        <tbody class="table-tbody">
+        {% for itemColums in items %}
+            <tr
+                data-controller="csk-crud-table-record"
+                data-csk-crud-table-record-delete-token-value="{{ csrf_token(entityConfig.encodedFqdn) }}"
+                data-csk-crud-table-record-delete-url-value="{{ path('csk_crud_delete', {
+                    'id': itemColums.instance.id,
+                    'fqdn': entityConfig.fqdnRouteArgument(constant('\\Codyas\\SkeletonBundle\\Helper\\Constants::ACTION_DELETE'))
+                }) }}">
+                {% for column in 1..entityConfig.columnCount %}
+                    {% apply spaceless %}
+                        <td class="align-middle">
+                            {% if loop.first and entityConfig.displayRowNumber %}
+                                {{ loop.parent.loop.index }}
+                            {% elseif loop.index0 == entityConfig.columnCount and entityConfig.displayActionsButtons %}
+                                {{ itemColums[loop.index0] | raw }}
+                            {% else %}
+                                {% if columnsDefinition[column-1].renderHtml %}
+                                    {{ itemColums[loop.index0] | raw }}
+                                {% else %}
+                                    {{ itemColums[loop.index0] }}
+                                {% endif %}
+                            {% endif %}
+                        </td>
+                    {% endapply %}
+                {% endfor %}
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endif %}

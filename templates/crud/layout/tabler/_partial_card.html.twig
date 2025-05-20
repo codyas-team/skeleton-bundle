@@ -1,0 +1,188 @@
+{# @var \Codyas\SkeletonBundle\Model\CrudEntity entityConfig #}
+{% set fqdn = entityConfig.encodedFqdn %}
+<div class="card" data-controller="csk-partial-card">
+    <div class="card-header bg-brand">
+        <h5 class="card-title">
+            {% if entityConfig.icon %}
+                <i class="{{ entityConfig.icon }}"></i>
+            {% endif %}
+            {{ entityConfig.headerTranslatableLabel | trans({"%count%":2}) }}</h5>
+        <div class="card-actions">
+            {% if csk_is_authorized(constant('Codyas\\SkeletonBundle\\Model\\CrudEntityInterface::CREATE'), entityConfig) %}
+{#                <a href="{{ path(entityConfig.createRoute, {'fqdn': entityConfig.customCreateRoute ? null : fqdn}) }}"#}
+{#                   class="btn btn-primary d-none d-sm-inline-block">#}
+{#                    <i class="fa fa-plus"></i>#}
+{#                    #}
+{#                </a>#}
+                <button type="button" class="btn btn-sm rounded btn-primary"
+                        data-action="click->csk-partial-card#requestDialog"
+                        data-dialog-id="{{ entityConfig.dialogs[0].id }}"
+                        data-load-url="{{ path(entityConfig.dialogs[0].loadUrl, {'id': scope ? scope.id : ""}) }}"
+                >
+                    <i class="fa fa-plus me-1"></i>
+                    {{ entityConfig.createTranslatableLabel | trans({"%count%":1}) }}
+                </button>
+            {% endif %}
+
+        </div>
+    </div>
+    <div class="card-body">
+{#        {% include '@Skeleton/crud/layout/tabler/_data_table.html.twig' %}#}
+        <div
+            class="csk-data-table"
+            data-controller="csk-datatable csk-crud"
+            data-csk-datatable-target="dialog"
+            data-csk-datatable-csk-datatable-item-outlet=".data-table-item"
+            data-csk-datatable-load-url-value="{{ url(entityConfig.listRoute, {'id': scope ? scope.id : ""}) }}"
+            data-csk-datatable-filter-url-value="{{ url(entityConfig.listRoute, {'id': scope ? scope.id : ""}) }}"
+            data-csk-datatable-csrf-token-value="{{ csrf_token(scope.id) }}"
+            data-csk-datatable-confirm-title-value="{{ "Please confirm" | trans }}"
+            data-csk-datatable-confirm-text-value="{{ "Do you really want to process the current page modifications?" | trans }}"
+            data-csk-datatable-filter-value="all"
+            data-csk-crud-generic-delete-msg-value="{{ 'Something went wrong while deleting the record. Please try again later.' | trans({}, 'SkeletonBundle') }}"
+            data-csk-crud-crud-mode-value="{{ entityConfig.crudMode }}"
+            data-action="csk-crud-dialog:dialog_processed@window->csk-datatable#loadContent csk-crud:record_deleted@window->csk-datatable#loadContent csk-crud-table-record:deleteRecord@window->csk-crud#showDeleteDialog"
+        >
+            <div class="filter p-3 text-right d-none">
+                <div class="btn-group btn-group-toggle btn-group-sm" data-toggle="buttons">
+{#                    <label#}
+{#                        data-toggle="tooltip"#}
+{#                        data-action="click->csk-datatable#handleStatusFilterChange"#}
+{#                        title="{{ "Show all records" | trans }}"#}
+{#                        data-filter-value="remove"#}
+{#                        class="btn btn-outline-brand font-weight-normal active">#}
+{#                        <input#}
+{#                            type="radio" name="st-filter-remove" id="st-filter-remove"#}
+{#                            value="remove" checked#}
+{#                            autocomplete="off"> {{ "All records" | trans }}#}
+{#                    </label>#}
+{#                    <label#}
+{#                        data-toggle="tooltip"#}
+{#                        data-action="click->csk-datatable#handleStatusFilterChange"#}
+{#                        title="{{ "Filter pending items" | trans }}"#}
+{#                        data-filter-value="{{ constant('App\\Constants::STATUS_PENDING') }}"#}
+{#                        class="btn font-weight-normal btn-outline-brand">#}
+{#                        <input#}
+{#                            type="radio" name="st-filter-pending" id="st-filter-pending"#}
+{#                            value="{{ constant('App\\Constants::STATUS_PENDING') }}"#}
+{#                            autocomplete="off"> {{ "Pending" | trans }}#}
+{#                    </label>#}
+{#                    <label#}
+{#                        data-toggle="tooltip"#}
+{#                        title="{{ "Filter processed items" | trans }}"#}
+{#                        data-filter-value="{{ constant('App\\Constants::STATUS_PROCESSED') }}"#}
+{#                        data-action="click->csk-datatable#handleStatusFilterChange"#}
+{#                        class="btn font-weight-normal btn-outline-brand">#}
+{#                        <input#}
+{#                            type="radio" name="st-filter-processed" id="st-filter-processed"#}
+{#                            value="{{ constant('App\\Constants::STATUS_PROCESSED') }}"#}
+{#                            autocomplete="off"> {{ "Processed" | trans }}#}
+{#                    </label>#}
+                </div>
+                <div class="btn-group btn-group-toggle btn-group-sm" data-toggle="buttons">
+{#                    <label#}
+{#                        data-toggle="tooltip"#}
+{#                        title="{{ "Show all records" | trans }}"#}
+{#                        data-action="click->csk-datatable#setFilter"#}
+{#                        data-filter-value="all"#}
+{#                        class="btn btn-outline-brand font-weight-normal active">#}
+{#                        <input#}
+{#                            type="radio"#}
+{#                            checked#}
+{#                            value="all"#}
+{#                            autocomplete="off"> {{ "All records" | trans }}#}
+{#                    </label>#}
+{#                    <label#}
+{#                        data-toggle="tooltip"#}
+{#                        title="{{ "Filter by incomes" | trans }}"#}
+{#                        data-action="click->csk-datatable#setFilter"#}
+{#                        data-filter-value="only-incomes"#}
+{#                        class="btn btn-outline-brand font-weight-normal">#}
+{#                        <input#}
+{#                            type="radio"#}
+{#                            value="only-incomes"#}
+{#                            autocomplete="off"> {{ "Incomes" | trans({"%count%":2}) }}#}
+{#                    </label>#}
+{#                    <label#}
+{#                        data-toggle="tooltip"#}
+{#                        title="{{ "Filter by costs" | trans }}"#}
+{#                        data-action="click->csk-datatable#setFilter"#}
+{#                        data-filter-value="only-costs"#}
+{#                        class="btn btn-outline-brand font-weight-normal ">#}
+{#                        <input#}
+{#                            type="radio"#}
+{#                            value="only-costs"#}
+{#                            autocomplete="off"> {{ "Costs" | trans({"%count%":2}) }}#}
+{#                    </label>#}
+                </div>
+            </div>
+            <div class="dialog-container">
+                <div
+                    data-csk-datatable-target="dialogBody"
+                    class="dialog-body d-flex flex-column position-relative">
+                    <div data-csk-datatable-target="content" class="dialog-content w-100"></div>
+                    <div data-csk-datatable-target="placeholder"
+                         class="dialog-placeholder text-center d-flex justify-content-center d-none">
+                        <div>
+                            <i class="fa fa-spinner-third fa-spin fa-4x mb-4"></i>
+                            <h5 class="font-weight-light">{{ "Loading, please wait." | trans }}</h5>
+                        </div>
+                    </div>
+                </div>
+                <div class="dialog-footer">
+                    <div class="row">
+                        <div class="col-lg-8">
+                            <div data-csk-datatable-target="pagination"></div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="modal modal-blur fade" id="{{ entityConfig.fqdn }}-deleteDialog" tabindex="-1" data-csk-crud-target="deleteDialog">
+                <div class="modal-dialog modal-sm modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                aria-label="{{ "Close" | trans({}, 'SkeletonBundle') }}"></button>
+                        <div class="modal-status bg-danger"></div>
+                        <div class="modal-body text-center py-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon mb-2 text-danger icon-lg" width="24" height="24"
+                                 viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round"
+                                 stroke-linejoin="round">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                <path d="M12 9v2m0 4v.01"/>
+                                <path
+                                    d="M5 19h14a2 2 0 0 0 1.84 -2.75l-7.1 -12.25a2 2 0 0 0 -3.5 0l-7.1 12.25a2 2 0 0 0 1.75 2.75"/>
+                            </svg>
+                            <h3>{{ "Please confirm" | trans({}, 'SkeletonBundle') }}</h3>
+                            <div class="text-secondary">
+                                {{ "Do you really want to remove this item? This action cannot be undone." | trans({}, 'SkeletonBundle') }}
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <div class="w-100">
+                                <div class="row">
+                                    <div class="col">
+                                        <a href="#" class="btn w-100" data-bs-dismiss="modal">
+                                            {{ "Cancel" | trans({}, 'SkeletonBundle') }}
+                                        </a>
+                                    </div>
+                                    <div class="col">
+                                        <button class="btn btn-danger w-100"
+                                                data-action="csk-crud#deleteRecord"
+                                                data-csk-crud-target="deleteDialogButton"
+                                        >
+                                            {{ "Delete" | trans({}, 'SkeletonBundle') }}
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% include '@Skeleton/crud/layout/tabler/_entity_dialogs.html.twig' with {
+        dialog: entityConfig.dialogs[0]
+    } %}
+</div>

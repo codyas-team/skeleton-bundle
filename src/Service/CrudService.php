@@ -56,13 +56,52 @@ class CrudService
     public function renderListFromFqdn(string $fqdn, ?array $filterData = []): array
     {
         $entityConfig = $this->getEntityConfiguration($fqdn);
-        if (!$this->authorizationChecker->isGranted(CrudEntityInterface::LIST, new VoterArgument($entityConfig))) {
-            throw new AccessDeniedException();
+        if ($entityConfig->crudMode === CrudEntityInterface::CRUD_MODE_SPA) {
+            return $this->renderJsonListResponseFromEntityConfig($entityConfig, $filterData);
         }
         return $this->renderListFromEntityConfig($entityConfig, $filterData);
     }
 
+    public function renderPartialFromFqdn(string $fqdn, ?array $filterData = []): array
+    {
+        $entityConfig = $this->getEntityConfiguration($fqdn);
+        return $this->renderPartialFromEntityConfig($entityConfig, $filterData);
+    }
+
     public function renderListFromEntityConfig(CrudEntity $entityConfig, ?array $filterData = []): array
+    {
+        if (!$this->authorizationChecker->isGranted(CrudEntityInterface::LIST, new VoterArgument($entityConfig))) {
+            throw new AccessDeniedException();
+        }
+        $filterForm = $this->getFilterFormInstance($entityConfig, $filterData);
+        $pagination = $this->buildPagination($entityConfig, $filterForm);
+        return [$entityConfig->getListTemplate(), [
+            'entityConfig' => $entityConfig,
+            'filterForm' => $filterForm?->createView(),
+            'pagination' => $pagination,
+            'items' => $this->buildResponse($pagination, $entityConfig)
+        ]];
+    }
+
+    public function renderJsonListResponseFromEntityConfig(CrudEntity $entityConfig, ?array $filterData = []): array
+    {
+        if (!$this->authorizationChecker->isGranted(CrudEntityInterface::LIST, new VoterArgument($entityConfig))) {
+            throw new AccessDeniedException();
+        }
+        $filterForm = $this->getFilterFormInstance($entityConfig, $filterData);
+        $pagination = $this->buildPagination($entityConfig, $filterForm);
+        return [
+            'pagination' => $this->twig->render('@Skeleton/crud/layout/tabler/_data_table_pagination.html.twig', [
+                'lineItems' => $pagination
+            ]),
+            'content' => $this->twig->render('@Skeleton/crud/layout/tabler/_data_table.html.twig', [
+                'entityConfig' => $entityConfig,
+                'items' => $this->buildResponse($pagination, $entityConfig)
+            ])
+        ];
+    }
+
+    public function renderPartialFromEntityConfig(CrudEntity $entityConfig, ?array $filterData = []): array
     {
         if (!$this->authorizationChecker->isGranted(CrudEntityInterface::LIST, new VoterArgument($entityConfig))) {
             throw new AccessDeniedException();
@@ -270,7 +309,7 @@ class CrudService
         return $this->authorizationChecker->isGranted($attribute, new VoterArgument($entityConfig, $instance));
     }
 
-    public function denyAccessUnlessGranted(string $attribute, CrudEntity $entityConfig, ?CrudEntityInterface $instance) : void
+    public function denyAccessUnlessGranted(string $attribute, CrudEntity $entityConfig, ?CrudEntityInterface $instance): void
     {
         if (!$this->isAuthorized($attribute, $entityConfig, $instance)) {
             throw new AccessDeniedHttpException();
