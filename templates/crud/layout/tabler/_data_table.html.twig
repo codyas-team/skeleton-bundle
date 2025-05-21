@@ -1,5 +1,5 @@
 {% if items|length > 0 %}
-    <table class="table {{ entityConfig.dataTableClass }}"
+    <table class="table mb-0 {{ entityConfig.dataTableClass }}"
            data-controller="csk-crud-table"
            data-csk-crud-table-load-url-value="{{ path('csk_crud_fetch', {'fqdn' : entityConfig.encodedFqdn}) }}">
         <thead>

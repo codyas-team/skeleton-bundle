@@ -26,8 +26,7 @@
 
         </div>
     </div>
-    <div class="card-body">
-{#        {% include '@Skeleton/crud/layout/tabler/_data_table.html.twig' %}#}
+    <div class="card-body p-0">
         <div
             class="csk-data-table"
             data-controller="csk-datatable csk-crud"
@@ -129,10 +128,10 @@
                         </div>
                     </div>
                 </div>
-                <div class="dialog-footer">
-                    <div class="row">
+                <div class="card-footer">
+                    <div class="row justify-content-end">
                         <div class="col-lg-8">
-                            <div data-csk-datatable-target="pagination"></div>
+                            <div data-csk-datatable-target="pagination" class="justify-content-end d-flex"></div>
                         </div>
                     </div>
 
