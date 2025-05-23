@@ -14,7 +14,7 @@ readonly final class DialogDefinition
         public ?bool                           $displayHeader = true,
         public ?string                         $dialogWidthClass = "",
         public ?string                         $icon = "",
-        public ?bool                           $asActionButton = false
+        public ?bool                           $asActionButton = true
     )
     {
     }
