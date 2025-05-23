@@ -56,7 +56,11 @@ class CrudEntity
             CrudEntityInterface::EDIT => 'ROLE_ADMIN',
             CrudEntityInterface::DELETE => 'ROLE_ADMIN'
         ]),
-        public ?array          $exportConfiguration = null
+        public ?array          $exportConfiguration = null,
+        public ?string         $icon = null,
+        public ?string         $crudMode = CrudEntityInterface::CRUD_MODE_NON_SPA,
+        public ?string         $spaModalFormWidth = 'modal-lg',
+        public ?string         $dataTableClass = "table-hover",
     )
     {
     }

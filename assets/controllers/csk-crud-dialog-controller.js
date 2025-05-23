@@ -87,8 +87,17 @@ export default class extends Controller {
             if (json.msg !== undefined){
                 Notify.success(json.msg)
             }
+            if (json.triggerEvent !== undefined && json.triggerEvent === true){
+                this.dispatch('dialog_processed', {
+                    detail: {
+                        dialogId: this.idValue
+                    }
+                });
+                this.dialog.hide();
+                return;
+            }
             Turbo.visit(window.location.href, {action: "replace"});
-            this.dialog.hide()
+            this.dialog.hide();
         } catch (error) {
             if (error instanceof ValidationError) {
                 Notify.warning(error.message)

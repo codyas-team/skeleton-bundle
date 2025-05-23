@@ -14,16 +14,32 @@
         </a>
     {% endif %}
     {% if csk_is_authorized(constant('Codyas\\SkeletonBundle\\Model\\CrudEntityInterface::EDIT'), entityConfig, instance) %}
-        <a href="{{ path(entityConfig.editRoute, {
-            'id': instance.id,
-            'fqdn': entityConfig.customEditRoute ? null : fqdn
-        }) }}"
-           class="btn  w-100 btn-icon btn-sm"
-           data-toggle="tooltip"
-           title="{{ "Edit" | trans({}, 'SkeletonBundle') }}"
-           aria-label="{{ "Edit" | trans({}, 'SkeletonBundle') }}">
-            <i class="fa fa-edit"></i>
-        </a>
+        {% if entityConfig.crudMode == constant('Codyas\\SkeletonBundle\\Model\\CrudEntityInterface::CRUD_MODE_SPA') %}
+            <button
+                data-toggle="tooltip"
+                data-action="csk-crud-table-record#requestDialog"
+                data-dialog-id="{{ entityConfig.editRoute }}-{{ entityConfig.fqdn }}"
+                data-load-url="{{ path(entityConfig.editRoute, {
+                    'id': instance.id,
+                    'fqdn': entityConfig.customEditRoute ? null : fqdn
+                }) }}"
+                title="{{ "Edit" | trans({}, 'SkeletonBundle') }}"
+                aria-label="{{ "Edit" | trans({}, 'SkeletonBundle') }}"
+                class="btn  w-100 btn-icon btn-sm">
+                <i class="fa fa-edit"></i>
+            </button>
+        {% else %}
+            <a href="{{ path(entityConfig.editRoute, {
+                'id': instance.id,
+                'fqdn': entityConfig.customEditRoute ? null : fqdn
+            }) }}"
+               class="btn  w-100 btn-icon btn-sm"
+               data-toggle="tooltip"
+               title="{{ "Edit" | trans({}, 'SkeletonBundle') }}"
+               aria-label="{{ "Edit" | trans({}, 'SkeletonBundle') }}">
+                <i class="fa fa-edit"></i>
+            </a>
+        {% endif %}
     {% endif %}
 
     {% include '@Skeleton/crud/partials/_action_buttons_dialogs.html.twig' %}

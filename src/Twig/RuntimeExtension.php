@@ -14,7 +14,9 @@ final class RuntimeExtension implements RuntimeExtensionInterface
 {
     public function __construct(
         readonly private EventDispatcherInterface $eventDispatcher,
-        readonly private ParameterBagInterface    $parameterBag, private readonly CrudService $crudService
+        readonly private ParameterBagInterface    $parameterBag,
+        private readonly CrudService              $crudService,
+        private readonly \Twig\Environment        $twig,
     )
     {
     }
@@ -56,6 +58,17 @@ final class RuntimeExtension implements RuntimeExtensionInterface
     public function isAuthorized(string $attribute, CrudEntity $entityConfig, ?CrudEntityInterface $instance = null): bool
     {
         return $this->crudService->isAuthorized($attribute, $entityConfig, $instance);
+    }
+
+    public function buildPartialLayout(string $fqdn, mixed $filter = null, mixed $scope = null): array
+    {
+        $renderDetails = $this->crudService->renderPartialFromFqdn($fqdn, $filter);
+        return [
+            'template' => $renderDetails[0],
+            'arguments' => array_merge($renderDetails[1], [
+                'scope' => $scope,
+            ]),
+        ];
     }
 
 }

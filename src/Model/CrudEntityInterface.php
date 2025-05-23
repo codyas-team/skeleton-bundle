@@ -19,6 +19,10 @@ interface CrudEntityInterface
 
     const string EXPORT_IMPLEMENTATION_SERVICE_TAG = "csk_export_implementation";
 
+    const string CRUD_MODE_NON_SPA = "non-spa";
+    
+    const string CRUD_MODE_SPA = "spa";
+
     public function getId(): ?int;
 
     public function renderDataTableRow(RowRendererArguments $arguments): array;
