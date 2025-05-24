@@ -61,6 +61,7 @@ class CrudEntity
         public ?string         $crudMode = CrudEntityInterface::CRUD_MODE_NON_SPA,
         public ?string         $spaModalFormWidth = 'modal-lg',
         public ?string         $dataTableClass = "table-hover",
+        public ?bool           $dataTableResponsive = true,
     )
     {
     }

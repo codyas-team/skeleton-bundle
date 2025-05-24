@@ -83,7 +83,7 @@
         {% endif %}
         <div class="col-{{ entityConfig.filterable ? '9' : '12' }}">
             <div class="card">
-                <div class="card-body p-0 table-responsive">
+                <div class="card-body p-0 {{ entityConfig.dataTableResponsive ? 'table-responsive' : '' }}">
                     {% if items|length > 0 %}
                         {% include '@Skeleton/crud/layout/tabler/_data_table.html.twig' %}
                     {% else %}
