@@ -131,7 +131,7 @@ class CrudService
         if (!$entityConfig) {
             $entityConfig = $this->getEntityConfiguration(get_class($instance));
         }
-        $voterAttribute = $instance === null ? CrudEntityInterface::CREATE : CrudEntityInterface::EDIT;
+        $voterAttribute = $instance?->getId() === null ? CrudEntityInterface::CREATE : CrudEntityInterface::EDIT;
         $this->denyAccessUnlessGranted($voterAttribute, $entityConfig, $instance);
         $formType = $entityConfig->formType;
         $actionUrl = $this->generateInstanceActionUrl($instance, $entityConfig);

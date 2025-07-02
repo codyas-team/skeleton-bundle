@@ -186,6 +186,9 @@ class CrudController extends AbstractController
     public function autoConfiguredDetails(int $id, Request $request): Response
     {
         $instance = $this->em->getRepository($this->entityConfiguration->fqdn)->find($id);
+        if (!$instance){
+            throw $this->createNotFoundException();
+        }
         return $this->render(...$this->crudService->renderDetails(instance: $instance));
     }
 
