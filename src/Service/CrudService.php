@@ -133,7 +133,6 @@ class CrudService
         }
         $voterAttribute = $instance === null ? CrudEntityInterface::CREATE : CrudEntityInterface::EDIT;
         $this->denyAccessUnlessGranted($voterAttribute, $entityConfig, $instance);
-
         $formType = $entityConfig->formType;
         $actionUrl = $this->generateInstanceActionUrl($instance, $entityConfig);
         $form = $this->formFactory->create($formType, $instance, [
@@ -282,7 +281,8 @@ class CrudService
                 'fqdn' => $entityConfig->getEncodedFqdn()]);
         } else {
             $actionUrl = $this->router->generate('csk_crud_create', [
-                'fqdn' => $entityConfig->getEncodedFqdn()
+                'fqdn' => $entityConfig->getEncodedFqdn(),
+                'scope' => $this->requestStack->getCurrentRequest()->get('scope')
             ]);
         }
         return $actionUrl;
