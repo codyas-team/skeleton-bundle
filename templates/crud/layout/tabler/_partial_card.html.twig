@@ -17,7 +17,7 @@
                 <button type="button" class="btn btn-sm rounded btn-primary"
                         data-action="click->csk-partial-card#requestDialog"
                         data-dialog-id="{{ entityConfig.dialogs[0].id }}"
-                        data-load-url="{{ path(entityConfig.dialogs[0].loadUrl, {'id': scope ? scope.id : ""}) }}"
+                        data-load-url="{{ path(entityConfig.dialogs[0].loadUrl, {'scope': scopeFqdn, 'id': scope ? scope.id : ""}) }}"
                 >
                     <i class="fa fa-plus me-1"></i>
                     {{ entityConfig.createTranslatableLabel | trans({"%count%":1}) }}
@@ -32,8 +32,8 @@
             data-controller="csk-datatable csk-crud"
             data-csk-datatable-target="dialog"
             data-csk-datatable-csk-datatable-item-outlet=".data-table-item"
-            data-csk-datatable-load-url-value="{{ url(entityConfig.listRoute, {'id': scope ? scope.id : ""}) }}"
-            data-csk-datatable-filter-url-value="{{ url(entityConfig.listRoute, {'id': scope ? scope.id : ""}) }}"
+            data-csk-datatable-load-url-value="{{ url(entityConfig.listRoute, {'scope': scopeFqdn, 'id': scope ? scope.id : ""}) }}"
+            data-csk-datatable-filter-url-value="{{ url(entityConfig.listRoute, {'scope': scopeFqdn, 'id': scope ? scope.id : ""}) }}"
             data-csk-datatable-csrf-token-value="{{ csrf_token(scope.id) }}"
             data-csk-datatable-confirm-title-value="{{ "Please confirm" | trans }}"
             data-csk-datatable-confirm-text-value="{{ "Do you really want to process the current page modifications?" | trans }}"

@@ -67,6 +67,7 @@ final class RuntimeExtension implements RuntimeExtensionInterface
             'template' => $renderDetails[0],
             'arguments' => array_merge($renderDetails[1], [
                 'scope' => $scope,
+                'scopeFqdn' => base64_encode(get_class($scope)),
             ]),
         ];
     }

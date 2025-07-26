@@ -136,8 +136,9 @@ class CrudService
 
         $formType = $entityConfig->formType;
         $actionUrl = $this->generateInstanceActionUrl($instance, $entityConfig);
+        $scope = $this->requestStack->getCurrentRequest()->get('scope');
         $form = $this->formFactory->create($formType, $instance, [
-            'action' => $actionUrl
+            'action' => $this->buildActionUrlWithScope($actionUrl, $scope),
         ]);
         $template = $instance->getId() ? $entityConfig->getEditTemplate() : $entityConfig->getCreateTemplate();
         return [$template, [
@@ -340,4 +341,11 @@ class CrudService
         }
         return $filterForm;
     }
+
+    private function buildActionUrlWithScope(string $actionUrl, ?string $scope): string
+    {
+        $queryParams = $scope ? ['scope' => $scope] : [];
+        return $actionUrl . ($queryParams ? '?' . http_build_query($queryParams) : '');
+    }
+
 }
