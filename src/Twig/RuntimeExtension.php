@@ -72,4 +72,9 @@ final class RuntimeExtension implements RuntimeExtensionInterface
         ];
     }
 
+    public function getClass(mixed $instance): string
+    {
+        return base64_encode(get_class($instance));
+    }
+
 }

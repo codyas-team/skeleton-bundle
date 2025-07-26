@@ -9,15 +9,14 @@
             {{ entityConfig.headerTranslatableLabel | trans({"%count%":2}) }}</h5>
         <div class="card-actions">
             {% if csk_is_authorized(constant('Codyas\\SkeletonBundle\\Model\\CrudEntityInterface::CREATE'), entityConfig) %}
-{#                <a href="{{ path(entityConfig.createRoute, {'fqdn': entityConfig.customCreateRoute ? null : fqdn}) }}"#}
-{#                   class="btn btn-primary d-none d-sm-inline-block">#}
-{#                    <i class="fa fa-plus"></i>#}
-{#                    #}
-{#                </a>#}
                 <button type="button" class="btn btn-sm rounded btn-primary"
                         data-action="click->csk-partial-card#requestDialog"
                         data-dialog-id="{{ entityConfig.dialogs[0].id }}"
-                        data-load-url="{{ path(entityConfig.dialogs[0].loadUrl, {'scope': scopeFqdn, 'id': scope ? scope.id : ""}) }}"
+                        data-load-url="{{ path(entityConfig.dialogs[0].loadUrl, {
+                            'id': scope.id | default(""),
+                            'scope': csk_get_encoded_class(scope)
+                        })
+                        }}"
                 >
                     <i class="fa fa-plus me-1"></i>
                     {{ entityConfig.createTranslatableLabel | trans({"%count%":1}) }}
