@@ -81,7 +81,7 @@ export default class extends Controller {
             if (!response.ok) {
                 const errorResponse = response.status === 400 ? await response.json() : null
                 let message = errorResponse.msg !== undefined ? errorResponse.msg : this.genericErrorMsgValue;
-                throw new ValidationError(message, null, errorResponse.view);
+                throw new ValidationError(message, null, errorResponse.form);
             }
             const json = await response.json()
             if (json.msg !== undefined){

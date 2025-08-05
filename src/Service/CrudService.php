@@ -283,7 +283,6 @@ class CrudService
         } else {
             $actionUrl = $this->router->generate('csk_crud_create', [
                 'fqdn' => $entityConfig->getEncodedFqdn(),
-                'scope' => $this->requestStack->getCurrentRequest()->get('scope')
             ]);
         }
         return $actionUrl;
