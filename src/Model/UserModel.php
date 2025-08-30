@@ -117,12 +117,12 @@ class UserModel implements UserInterface, PasswordAuthenticatedUserInterface, So
         // $this->plainPassword = null;
     }
 
-    public function getName(): ?string
+    public function getName(): string
     {
         return $this->name;
     }
 
-    public function setName(?string $name): static
+    public function setName(string $name): static
     {
         $this->name = $name;
 
@@ -134,7 +134,7 @@ class UserModel implements UserInterface, PasswordAuthenticatedUserInterface, So
         return $this->lastName;
     }
 
-    public function setLastName(?string $lastName): static
+    public function setLastName(string $lastName): static
     {
         $this->lastName = $lastName;
 
