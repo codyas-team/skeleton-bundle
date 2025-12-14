@@ -255,6 +255,13 @@ class CrudController extends AbstractController
     private function handleFormResponse(Request $request, CrudEntityInterface $instance): Response
     {
         if ($this->acceptsJsonResponse($request)) {
+            if ($this->entityConfiguration->crudMode === CrudEntityInterface::CRUD_MODE_NON_SPA) {
+                $this->createFlashNonBlockingAlert([
+                    'type' => Constants::TYPE_SUCCESS,
+                    'title' => $this->translator->trans("Done!", domain: "SkeletonBundle"),
+                    'msg' => $this->translator->trans("The changes to the record were successfully saved.", domain: "SkeletonBundle"),
+                ]);
+            }
             return $this->json([
                 'triggerEvent' => true,
                 'msg' => $this->translator->trans("The changes to the record were successfully saved.", domain: "SkeletonBundle"),
